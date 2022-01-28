@@ -1,12 +1,9 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useState } from 'react'
-import { supabase } from '../api'
 import styles from '../styles/Home.module.css'
 
-const Home: NextPage = () => {
+const Profile: NextPage = () => {
   return (
     <div className={styles.container}>
       <Head>
@@ -29,4 +26,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default Profile
