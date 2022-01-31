@@ -19,6 +19,7 @@ function MyApp({ Component, pageProps }) {
     setUser(user)
   }
   return (
+    
   <div>
     <nav className="p-6 border-b border-gray-300">
       <Link href="/" passHref>
