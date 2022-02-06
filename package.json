@@ -1,31 +1,29 @@
 {
-  "name": "tokoapp",
-  "private": true,
+  "name": "tokoapp-svelte",
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
     "supabase": "cd .supabase && docker-compose up -d",
     "flyway": "docker run --rm --network=supabase_default -v `pwd`/sql:/flyway/sql -v `pwd`/flyway.conf:/flyway/conf/flyway.conf flyway/flyway"
   },
-  "dependencies": {
-    "@supabase/react-data-grid": "^7.1.0-beta.7",
-    "@supabase/supabase-js": "^1.29.4",
-    "@supabase/ui": "^0.36.3",
-    "@tailwindcss/typography": "^0.5.0",
-    "next": "12.0.9",
-    "react": "17.0.2",
-    "react-dom": "17.0.2"
-  },
   "devDependencies": {
-    "@types/node": "17.0.13",
-    "@types/react": "17.0.38",
+    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
+    "@tsconfig/svelte": "^2.0.1",
     "autoprefixer": "^10.4.2",
-    "eslint": "8.7.0",
-    "eslint-config-next": "12.0.9",
-    "postcss": "^8.4.5",
-    "tailwindcss": "^3.0.17",
-    "typescript": "4.5.5"
+    "postcss": "^8.4.6",
+    "svelte": "^3.44.0",
+    "svelte-check": "^2.2.7",
+    "svelte-preprocess": "^4.9.8",
+    "tailwindcss": "^3.0.18",
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.4",
+    "vite": "^2.7.2"
+  },
+  "dependencies": {
+    "svelte-scrollto": "^0.2.0"
   }
 }

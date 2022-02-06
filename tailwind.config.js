@@ -1,12 +1,13 @@
-module.exports = {
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-  ],
-  theme: {
+export default {
+  plugins: [],
+    theme: {
     extend: {},
   },
-  plugins: [
-    require('@tailwindcss/typography')
+  content: [
+    "./index.html",
+    './src/**/*.{svelte,js,ts}'
   ],
+  variants: {
+    extend: {},
+  }
 }
