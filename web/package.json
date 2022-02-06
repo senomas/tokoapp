@@ -24,6 +24,7 @@
     "vite": "^2.7.2"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^1.30.0",
     "svelte-scrollto": "^0.2.0"
   }
 }
