@@ -1,6 +1,7 @@
 <script>
   import * as animateScroll from "svelte-scrollto";
-  import { supabase } from "./supabase-client";
+  import { Link } from "svelte-navigator";
+  import { supabase } from "./supabase";
   import { User } from "./store";
 
   export let user;
@@ -34,7 +35,6 @@
       loading = false;
     }
   };
-  $: console.log({ user });
 </script>
 
 <header class="text-gray-600 body-font">
@@ -55,6 +55,10 @@
       <h2 class="ml-3 text-xl">ABC</h2>
     </a>
     <nav class="md:mx-auto flex flex-wrap items-center justify-center">
+      <Link class="mr-5" to="/">Home</Link>
+      <Link class="mr-5" to="/admin/item-category">Item Category</Link>
+      <Link class="mr-5" to="/admin/item">Item</Link>
+      <Link class="mr-5" to="about">About</Link>
       <a
         class="mr-5"
         name="navigation"
