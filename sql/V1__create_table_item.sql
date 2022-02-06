@@ -16,12 +16,20 @@ CREATE TABLE item_categories (
 
 ALTER TABLE item_categories ENABLE ROW LEVEL SECURITY;
 
--- CREATE POLICY "allow all to select item_categories" ON item_categories;
+CREATE POLICY "allow select item_categories to all users" ON public.item_categories FOR SELECT USING (true);
 
-CREATE RECURSIVE VIEW item_category_views (id, name) AS 
+CREATE RECURSIVE VIEW item_category_views (id, parent_id, parent, name, full_name, description, created_at, created_by, updated_at, updated_by) AS 
 SELECT
 	id,
-	name
+  parent_id,
+  '' AS parent,
+	name,
+  name AS full_name,
+  description,
+  created_at,
+  created_by,
+  updated_at,
+  updated_by
 FROM
 	item_categories
 WHERE
@@ -29,9 +37,15 @@ WHERE
 UNION ALL
 	SELECT
 		e.id,
-		(
-			rl.name || ' || ' || e.name
-		) AS name
+    e.parent_id,
+    rl.name AS parent,
+    e.name,
+    rl.name || ' || ' || e.name AS full_name,
+    e.description,
+    e.created_at,
+    e.created_by,
+    e.updated_at,
+    e.updated_by
 	FROM
 		item_categories e
 	INNER JOIN item_category_views rl ON e.parent_id = rl.id;
@@ -49,3 +63,12 @@ CREATE TABLE items (
 );
 
 ALTER TABLE items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "allow select items to all users" ON public.items FOR SELECT USING (true);
+
+CREATE VIEW item_views AS
+SELECT
+  i.*,
+  ic.full_name AS category
+FROM
+  items i 
+  INNER JOIN item_category_views ic ON i.category_id = ic.id;
