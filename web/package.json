@@ -7,8 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "supabase": "cd .supabase && docker-compose up -d",
-    "flyway": "docker run --rm --network=supabase_default -v `pwd`/sql:/flyway/sql -v `pwd`/flyway.conf:/flyway/conf/flyway.conf flyway/flyway"
+    "supabase": "cd ../supabase && docker-compose up -d",
+    "flyway": "docker run --rm --network=supabase_default -v `pwd`/../sql:/flyway/sql -v `pwd`/../flyway.conf:/flyway/conf/flyway.conf flyway/flyway"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",

@@ -10,10 +10,10 @@
 *.sw?
 
 # dependencies
-/node_modules
+/web/node_modules
 
 # production
-/dist
+/web/dist
 
 # misc
 .DS_Store
