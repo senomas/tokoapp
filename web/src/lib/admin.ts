@@ -26,6 +26,7 @@ export const config = {
         id: "id",
         name: "ID",
         sortable: true,
+        class: "w-20",
       },
       {
         id: "category",
@@ -37,6 +38,7 @@ export const config = {
         },
         name: "Category",
         sortable: true,
+        class: "w-80",
       },
       {
         id: "name",
@@ -45,7 +47,8 @@ export const config = {
       },
       {
         id: "description",
-        name: "Description"
+        name: "Description",
+        class: "w-100",
       },
     ],
   }

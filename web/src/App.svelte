@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Router, Route, Link } from "svelte-navigator";
+  import { Router, Route } from "svelte-navigator";
   import { onDestroy } from "svelte";
   import Nav from "./lib/Nav.svelte";
   import Footer from "./lib/Footer.svelte";
@@ -21,7 +21,13 @@
   <main class="max-w mx-auto px-4">
     <div class="pt-4 pb-12">
       <Nav {user} />
-      <LazyRoute path="admin/*" primary={false} {user} component={Admin} delayMs={500}>
+      <LazyRoute
+        path="admin/*"
+        primary={false}
+        {user}
+        component={Admin}
+        delayMs={500}
+      >
         Loading Admin...
       </LazyRoute>
       <Route primary={false}>
