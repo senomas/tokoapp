@@ -1,22 +1,32 @@
 <script>
-  import * as animateScroll from "svelte-scrollto";
   import { Link } from "svelte-navigator";
   import { supabase } from "./supabase";
   import { User } from "./store";
 
   export let user;
+
   let loading = false;
+  let email = "";
+  let password = "";
 
   const login = async () => {
     try {
       loading = true;
+      // const {
+      //   user: cuser,
+      //   session,
+      //   error,
+      // } = await supabase.auth.signUp({
+      //   email,
+      //   password,
+      // });
       const {
         user: cuser,
         session,
         error,
       } = await supabase.auth.signIn({
-        email: "agus@senomas.com",
-        password: "dodol123",
+        email,
+        password,
       });
       if (error) throw error;
       console.log({ cuser, session, error });
@@ -59,47 +69,34 @@
       <Link class="mr-5" to="/admin/item-category">Item Category</Link>
       <Link class="mr-5" to="/admin/item">Item</Link>
       <Link class="mr-5" to="about">About</Link>
-      <a
-        class="mr-5"
-        name="navigation"
-        on:click={() =>
-          animateScroll.scrollTo({
-            element: "#home",
-            offset: 50,
-          })}>Home</a
-      >
-      <a
-        class="mr-5"
-        name="navigation"
-        on:click={() =>
-          animateScroll.scrollTo({
-            element: "#services",
-            offset: 50,
-          })}>Our Services</a
-      >
-      <a
-        class="mr-5"
-        name="navigation"
-        on:click={() =>
-          animateScroll.scrollTo({
-            element: "#teams",
-            offset: 50,
-          })}>Our team</a
-      >
-      {#if !user}
-        <div>
-          <button class="bg-blue-600 px-6 py-2 text-white rounded-full hover:bg-blue-500 focus:outline-none focus:shadow-outline" disabled={loading} on:click={login}
-            >{loading ? "Loading" : "LOGIN"}</button
+      <div>
+        {#if !user}
+          <input
+            type="text"
+            bind:value={email}
+            placeholder="email"
+            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+          />
+          <input
+            type="password"
+            bind:value={password}
+            placeholder="password"
+            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+          />
+          <button
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg w-full sm:w-auto px-5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            disabled={loading}
+            on:click={login}>{loading ? "Loading" : "LOGIN"}</button
           >
-        </div>
-      {:else}
-        <div>
+        {:else}
           {user.email}
-          <button class="bg-blue-600 px-6 py-2 text-white rounded-full hover:bg-blue-500 focus:outline-none focus:shadow-outline" disabled={loading} on:click={logout}
-            >{loading ? "Loading" : "LOGOUT"}</button
+          <button
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg w-full sm:w-auto px-5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            disabled={loading}
+            on:click={logout}>{loading ? "Loading" : "LOGOUT"}</button
           >
-        </div>
-      {/if}
+        {/if}
+      </div>
     </nav>
   </div>
 </header>

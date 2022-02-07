@@ -8,6 +8,7 @@
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "supabase": "cd ../supabase && docker-compose up -d",
+    "supabase-stop": "cd ../supabase && docker-compose down -v",
     "flyway": "docker run --rm --network=supabase_default -v `pwd`/../sql:/flyway/sql -v `pwd`/../flyway.conf:/flyway/conf/flyway.conf flyway/flyway"
   },
   "devDependencies": {
