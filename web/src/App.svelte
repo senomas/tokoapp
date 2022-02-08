@@ -9,6 +9,7 @@
 
   let user;
   const unUser = User.subscribe((v) => {
+    console.log({ currentUser: v });
     user = v;
     localStorage.setItem("user", JSON.stringify(v));
   });

@@ -1,8 +1,8 @@
 <script>
-  import { supabase } from "./supabase";
-  import AdminDetail from "./AdminDetail.svelte";
-  import AdminInputText from "./AdminInputText.svelte";
-  import AdminInputSelect from "./AdminInputSelect.svelte";
+  import { supabase } from "../supabase";
+  import AdminDetail from "./Detail.svelte";
+  import InputText from "../form/InputText.svelte";
+  import InputSelect from "../form/InputSelect.svelte";
 
   export let user;
   export let config;
@@ -132,7 +132,7 @@
 
 <AdminDetail {config} {params} {loading} {saveData} {deleteData}>
   <div class="flex flex-wrap -mx-3 mb-6">
-    <AdminInputText
+    <InputText
       id="id"
       label="ID"
       {loading}
@@ -141,7 +141,7 @@
       readonly={true}
       class="md:w-1/2"
     />
-    <AdminInputSelect
+    <InputSelect
       id="category"
       label="Category"
       {loading}
@@ -150,7 +150,7 @@
       validate={validate.name}
       class="md:w-1/2"
     />
-    <AdminInputText
+    <InputText
       id="name"
       label="Name"
       {loading}
@@ -160,7 +160,7 @@
     />
   </div>
   <div class="flex flex-wrap -mx-3">
-    <AdminInputText
+    <InputText
       id="description"
       label="Description"
       {loading}

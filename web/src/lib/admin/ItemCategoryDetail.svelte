@@ -1,8 +1,8 @@
 <script>
-  import { supabase } from "./supabase";
-  import AdminDetail from "./AdminDetail.svelte";
-  import AdminInputText from "./AdminInputText.svelte";
-  import AdminInputSelect from "./AdminInputSelect.svelte";
+  import { supabase } from "../supabase";
+  import AdminDetail from "./Detail.svelte";
+  import AdminInputText from "../form/InputText.svelte";
+  import AdminInputSelect from "../form/InputSelect.svelte";
 
   export let user;
   export let config;

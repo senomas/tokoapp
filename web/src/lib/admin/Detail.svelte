@@ -1,5 +1,7 @@
 <script>
-  import { supabase } from "./supabase";
+  import { useNavigate } from "svelte-navigator";
+
+  const navigate = useNavigate();
 
   export let config;
   export let params;
@@ -37,7 +39,7 @@
       <div class="grow text-right">
         <button
           class="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-2 text-white py-1 px-5 rounded"
-          on:click={() => history.back()}>Back</button
+          on:click={() => navigate(-1)}>Back</button
         >
       </div>
     {:else}
@@ -57,7 +59,7 @@
       <div class="grow text-right">
         <button
           class="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-2 text-white py-1 px-5 rounded"
-          on:click={() => history.back()}>Back</button
+          on:click={() => navigate(-1)}>Back</button
         >
       </div>
     {/if}

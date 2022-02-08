@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { supabase } from "./supabase";
+  import { supabase } from "../supabase";
   import { useNavigate, useLocation } from "svelte-navigator";
-  import AdminListHeader from "./AdminListHeader.svelte";
+  import ListHeader from "./ListHeader.svelte";
 
+  export let user;
   export let config;
   export let entity;
 
@@ -55,15 +56,18 @@
     );
   }
 
-  async function fetchData(entity, p) {
+  async function fetchData(_, entity, p) {
     loading = true;
     const timeout = setTimeout(() => {
       fallback = true;
     }, 200);
     try {
       const param = p[entity] || (p[entity] = {});
-      pageSize = Math.min(100, param.ps ?? config.pageSize ?? 10);
-      const pagingSize = Math.min(20, param.pgs ?? config.pagingSize ?? 10);
+      pageSize = Math.min(100, param.ps ?? config.list?.pageSize ?? 10);
+      const pagingSize = Math.min(
+        20,
+        param.pgs ?? config.list?.pagingSize ?? 10
+      );
       const pagingSize1 = pageSize - 1;
       const pagingSize2 = Math.floor(pageSize / 2);
       page = parseInt(param.p ?? 1);
@@ -73,10 +77,10 @@
       const orderAsc = (param.oa ?? "a") === "a";
       let { data, count, error } = await supabase
         .from(config?.list?.entity || config?.entity || entity)
-        .select(config.listSelect || "*", { count: "exact" })
+        .select(config?.list?.select || "*", { count: "exact" })
         .order(orderField, { ascending: orderAsc })
         .range(rangeStart, rangeEnd);
-      // console.log({ entity, config, param, data, count, error });
+      console.log({ entity, config, param, data, count, error });
       headers = (config.list?.fields || config.fields).map((v) => {
         const nv = { ...v };
         if (nv.id === orderField) {
@@ -153,21 +157,15 @@
   }
 
   $: {
-    fetchData(entity, param);
+    fetchData(user, entity, param);
   }
 </script>
-
-<svelte:head>
-  <title>TokoAPP - {config.name || entity} List</title>
-  <meta name="robots" content="noindex nofollow" />
-  <html lang="en" />
-</svelte:head>
 
 <div>
   <table class="w-full table-fixed border border-gray-300">
     <thead class="bg-black">
       {#each headers as h}
-        <AdminListHeader {h} {navigate} />
+        <ListHeader {h} {navigate} />
       {/each}
     </thead>
     {#if fallback}
@@ -214,16 +212,15 @@
               Showing {rangeStart + 1} to {rangeStart + items.length} of {itemsCount}
               entries</td
             >
-            <td class="px-2 py-2 text-xs text-right">
+            <td class="px-2 py-2 text-xs text-right font-bold">
               {#each pages as p}
                 {#if p.param}
-                  <span class="px-2 py-2 text-blue-500 font-bold"
-                    ><button on:click={() => navigate(p.link, p.param)}
-                      >{p.title}</button
-                    ></span
+                  <span
+                    class="px-2 py-2 text-blue-700 cursor-pointer"
+                    on:click={() => navigate(p.link, p.param)}>{p.title}</span
                   >
                 {:else}
-                  <span class="px-2 py-2 text-black font-bold">{p.title}</span>
+                  <span class="px-2 py-2 text-black">{p.title}</span>
                 {/if}
               {/each}
             </td>

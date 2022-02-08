@@ -1,66 +1,72 @@
 export const config = {
   "item-category": {
     name: "Item Category",
-    entity: "item_category_views",
+    entity: "item_categories",
     detail: "./AdminItemCategoryDetail.svelte",
-    fields: [
-      {
-        id: "id",
-        name: "ID",
-        sortable: true,
-        class: "w-20",
-      },
-      {
-        id: "full_name",
-        name: "Name",
-        sortable: true,
-        render: (v) => {
-          if (v) {
-            return v.replaceAll("<", "&lt;").replaceAll(" || ", " &#187; ");
+    list: {
+      entity: "item_category_views",
+      fields: [
+        {
+          id: "id",
+          name: "ID",
+          sortable: true,
+          class: "w-20",
+        },
+        {
+          id: "full_name",
+          name: "Name",
+          sortable: true,
+          render: (v) => {
+            if (v) {
+              return v.replaceAll("<", "&lt;").replaceAll(" || ", " &#187; ");
+            }
+            return v;
           }
-          return v;
-        }
-      },
-      {
-        id: "description",
-        name: "Description",
-        class: "w-100",
-      },
-    ],
+        },
+        {
+          id: "description",
+          name: "Description",
+          class: "w-100",
+        },
+      ],
+    }
   },
   item: {
     name: "Item",
-    entity: "item_views",
+    entity: "items",
     detail: "./AdminItemDetail.svelte",
-    fields: [
-      {
-        id: "id",
-        name: "ID",
-        sortable: true,
-        class: "w-20",
-      },
-      {
-        id: "category",
-        render: (v) => {
-          if (v) {
-            return v.replaceAll("<", "&lt;").replaceAll(" || ", " &#187; ");
-          }
-          return v;
+    list: {
+      entity: "item_views",
+      fields: [
+        {
+          id: "id",
+          name: "ID",
+          sortable: true,
+          class: "w-20",
         },
-        name: "Category",
-        sortable: true,
-        class: "w-80",
-      },
-      {
-        id: "name",
-        name: "Name",
-        sortable: true,
-      },
-      {
-        id: "description",
-        name: "Description",
-        class: "w-100",
-      },
-    ],
+        {
+          id: "category",
+          render: (v) => {
+            if (v) {
+              return v.replaceAll("<", "&lt;").replaceAll(" || ", " &#187; ");
+            }
+            return v;
+          },
+          name: "Category",
+          sortable: true,
+          class: "w-80",
+        },
+        {
+          id: "name",
+          name: "Name",
+          sortable: true,
+        },
+        {
+          id: "description",
+          name: "Description",
+          class: "w-100",
+        },
+      ],
+    }
   }
 }
