@@ -1,8 +1,8 @@
 <script>
-  import { supabase } from "../supabase";
-  import AdminDetail from "./Detail.svelte";
-  import InputText from "../form/InputText.svelte";
-  import InputSelect from "../form/InputSelect.svelte";
+  import {supabase} from '../supabase';
+  import AdminDetail from './Detail.svelte';
+  import InputText from '../form/InputText.svelte';
+  import InputSelect from '../form/InputSelect.svelte';
 
   export let user;
   export let config;
@@ -17,25 +17,25 @@
     loading = true;
     try {
       if (!categories) {
-        let { data, error } = await supabase
-          .from("item_category_views")
-          .select("*");
+        let {data, error} = await supabase
+          .from('item_category_views')
+          .select('*');
         if (error) throw error;
-        categories = data.map((v) => ({
+        categories = data.map(v => ({
           id: v.id,
           name: v.full_name
-            .replaceAll("<", "&lt;")
-            .replaceAll(" || ", " &#187; "),
+            .replaceAll('<', '&lt;')
+            .replaceAll(' || ', ' &#187; ')
         }));
       }
-      if (params.id === "--NEW--") {
+      if (params.id === '--NEW--') {
         item = {};
       } else {
-        let { data, error } = await supabase
-          .from("items")
-          .select("*")
-          .eq(config.primaryKey || "id", params.id);
-        console.log({ data, error });
+        let {data, error} = await supabase
+          .from('items')
+          .select('*')
+          .eq(config.primaryKey || 'id', params.id);
+        console.log({data, error});
         if (error) throw error;
         if (data.length === 1) {
           item = data[0];
@@ -44,7 +44,7 @@
         }
       }
     } catch (error) {
-      console.log({ error });
+      console.log({error});
     } finally {
       loading = false;
     }
@@ -53,44 +53,44 @@
   async function saveData() {
     loading = true;
     try {
-      ["category_id"].forEach((k) => {
-        if (item[k] === "") {
+      ['category_id'].forEach(k => {
+        if (item[k] === '') {
           item[k] = null;
         }
       });
-      if (params.id === "--NEW--") {
-        let { data, error } = await supabase.from("items").insert(item);
+      if (params.id === '--NEW--') {
+        let {data, error} = await supabase.from('items').insert(item);
         console.log({
           insert: {
             item,
             data,
-            error,
-          },
+            error
+          }
         });
       } else {
         const newItem = {
           ...item,
           updated_at: new Date().toISOString(),
           updated_by: user.id,
-          [config.primaryKey || "id"]: undefined,
+          [config.primaryKey || 'id']: undefined
         };
-        let { data, error } = await supabase
-          .from("items")
+        let {data, error} = await supabase
+          .from('items')
           .update(newItem)
-          .eq(config.primaryKey || "id", parseInt(params.id));
+          .eq(config.primaryKey || 'id', parseInt(params.id));
         console.log({
           update: {
             item,
             data,
             newItem,
-            key: { [config.primaryKey || "id"]: params.id },
-            error,
-          },
+            key: {[config.primaryKey || 'id']: params.id},
+            error
+          }
         });
       }
       history.back();
     } catch (error) {
-      console.log({ error });
+      console.log({error});
     } finally {
       loading = false;
     }
@@ -99,21 +99,21 @@
   async function deleteData() {
     loading = true;
     try {
-      let { data, error } = await supabase
-        .from("items")
+      let {data, error} = await supabase
+        .from('items')
         .delete()
-        .eq(config.primaryKey || "id", parseInt(params.id));
+        .eq(config.primaryKey || 'id', parseInt(params.id));
       console.log({
         delete: {
           item,
           data,
-          key: { [config.primaryKey || "id"]: params.id },
-          error,
-        },
+          key: {[config.primaryKey || 'id']: params.id},
+          error
+        }
       });
       history.back();
     } catch (error) {
-      console.log({ error });
+      console.log({error});
     } finally {
       loading = false;
     }

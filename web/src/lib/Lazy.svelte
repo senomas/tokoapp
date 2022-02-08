@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from "svelte";
+  import {onMount} from 'svelte';
 
   export let component;
   export let delayMs = null;
@@ -10,7 +10,7 @@
 
   let props;
   $: {
-    const { component, delayMs, ...restProps } = $$props;
+    const {component, delayMs, ...restProps} = $$props;
     props = restProps;
   }
 

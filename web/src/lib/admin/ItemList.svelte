@@ -1,5 +1,5 @@
 <script lang="ts">
-  import List from "./List.svelte";
+  import List from './List.svelte';
 
   export let user;
   export let config;

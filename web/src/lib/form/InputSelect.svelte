@@ -7,7 +7,7 @@
   export let validate;
 </script>
 
-<div class={`w-full ${$$props.class || "md:w-1/2"} px-3 py-1`}>
+<div class={`w-full ${$$props.class || 'md:w-1/2'} px-3 py-1`}>
   <label
     class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
     for={`grid-${id}`}>{label}</label

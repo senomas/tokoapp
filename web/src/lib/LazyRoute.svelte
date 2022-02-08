@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Route } from "svelte-navigator";
-  import Lazy from "./Lazy.svelte";
+  import {Route} from 'svelte-navigator';
+  import Lazy from './Lazy.svelte';
 
   export let user = null;
   export let component;
@@ -8,7 +8,7 @@
 
   let props;
   $: {
-    const { component, user, ...restProps } = $$props;
+    const {component, user, ...restProps} = $$props;
     props = restProps;
   }
 </script>

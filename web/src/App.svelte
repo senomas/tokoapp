@@ -1,21 +1,21 @@
 <script lang="ts">
-  import { Router, Route } from "svelte-navigator";
-  import { onDestroy } from "svelte";
-  import Nav from "./lib/Nav.svelte";
-  import Footer from "./lib/Footer.svelte";
-  import { User } from "./lib/store";
-  import LazyRoute from "./lib/LazyRoute.svelte";
-  import Home from "./lib/Home.svelte";
+  import {Router, Route} from 'svelte-navigator';
+  import {onDestroy} from 'svelte';
+  import Nav from './lib/Nav.svelte';
+  import Footer from './lib/Footer.svelte';
+  import {User} from './lib/store';
+  import LazyRoute from './lib/LazyRoute.svelte';
+  import Home from './lib/Home.svelte';
 
   let user;
-  const unUser = User.subscribe((v) => {
-    console.log({ currentUser: v });
+  const unUser = User.subscribe(v => {
+    console.log({currentUser: v});
     user = v;
-    localStorage.setItem("user", JSON.stringify(v));
+    localStorage.setItem('user', JSON.stringify(v));
   });
   onDestroy(unUser);
 
-  const Admin = () => import("./lib/Admin.svelte");
+  const Admin = () => import('./lib/Admin.svelte');
 </script>
 
 <Router>

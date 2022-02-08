@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { supabase } from "../supabase";
-  import { useNavigate, useLocation } from "svelte-navigator";
-  import ListHeader from "./ListHeader.svelte";
+  import {supabase} from '../supabase';
+  import {useNavigate, useLocation} from 'svelte-navigator';
+  import ListHeader from './ListHeader.svelte';
 
   export let user;
   export let config;
@@ -10,7 +10,7 @@
   const location = useLocation();
   const nav = useNavigate();
 
-  let param = { [entity]: {} };
+  let param = {[entity]: {}};
   let loading = false;
   let fallback = false;
   let items = [];
@@ -25,34 +25,34 @@
   $: {
     const loc = $location;
     param[entity] = loc.search
-      .split("?")
+      .split('?')
       .slice(-1)[0]
-      .split("&")
-      .map((v) => v.split("="))
+      .split('&')
+      .map(v => v.split('='))
       .reduce((acc, v) => {
         acc[v[0]] = v[1];
         return acc;
       }, {});
   }
 
-  let headers = (config.list?.fields || config.fields).map((v) => ({
+  let headers = (config.list?.fields || config.fields).map(v => ({
     ...v,
-    title: v.name || v.id,
+    title: v.name || v.id
   }));
 
   function navigate(p, q, clearQ = false) {
     const loc = $location;
     if (!clearQ) {
-      q = { ...param[entity], ...q };
+      q = {...param[entity], ...q};
     }
     const qk = Object.keys(q);
     qk.sort();
     loading = true;
     nav(
       `${p || loc.pathname}?${qk
-        .filter((k) => k.length > 0)
-        .map((k) => `${k}=${encodeURIComponent(q[k])}`)
-        .join("&")}`
+        .filter(k => k.length > 0)
+        .map(k => `${k}=${encodeURIComponent(q[k])}`)
+        .join('&')}`
     );
   }
 
@@ -73,27 +73,27 @@
       page = parseInt(param.p ?? 1);
       rangeStart = (page - 1) * pageSize;
       rangeEnd = rangeStart + pageSize - 1;
-      const orderField = param.of || config.primaryKey || "id";
-      const orderAsc = (param.oa ?? "a") === "a";
-      let { data, count, error } = await supabase
+      const orderField = param.of || config.primaryKey || 'id';
+      const orderAsc = (param.oa ?? 'a') === 'a';
+      let {data, count, error} = await supabase
         .from(config?.list?.entity || config?.entity || entity)
-        .select(config?.list?.select || "*", { count: "exact" })
-        .order(orderField, { ascending: orderAsc })
+        .select(config?.list?.select || '*', {count: 'exact'})
+        .order(orderField, {ascending: orderAsc})
         .range(rangeStart, rangeEnd);
-      console.log({ entity, config, param, data, count, error });
-      headers = (config.list?.fields || config.fields).map((v) => {
-        const nv = { ...v };
+      console.log({entity, config, param, data, count, error});
+      headers = (config.list?.fields || config.fields).map(v => {
+        const nv = {...v};
         if (nv.id === orderField) {
-          nv.sort = orderAsc ? "a" : "d";
+          nv.sort = orderAsc ? 'a' : 'd';
           nv.param = {
             of: v.id,
-            oa: orderAsc ? "d" : "a",
+            oa: orderAsc ? 'd' : 'a'
           };
         } else if (v.sortable) {
           nv.param = {
             ...param,
             of: v.id,
-            oa: "a",
+            oa: 'a'
           };
         }
         nv.title = v.name || v.id;
@@ -109,46 +109,46 @@
       pmin = Math.max(1, pmax - pagingSize1);
       pages = [];
       pages.push({
-        title: "+",
-        link: "--NEW--",
-        param: {},
+        title: '+',
+        link: '--NEW--',
+        param: {}
       });
       pages.push({
-        title: "\u2759\u276E",
-        param: page > 1 ? { p: 1 } : undefined,
+        title: '\u2759\u276E',
+        param: page > 1 ? {p: 1} : undefined
       });
       pages.push({
-        title: "\u276E\u276E",
-        param: page > 1 ? { p: Math.max(1, pmin - 1) } : undefined,
+        title: '\u276E\u276E',
+        param: page > 1 ? {p: Math.max(1, pmin - 1)} : undefined
       });
       pages.push({
-        title: "\u276E",
-        param: page > 1 ? { p: page - 1 } : undefined,
+        title: '\u276E',
+        param: page > 1 ? {p: page - 1} : undefined
       });
       for (let p = pmin; p <= pmax; p++) {
         if (p === page) {
-          pages.push({ title: String(p) });
+          pages.push({title: String(p)});
         } else {
           pages.push({
             title: String(p),
-            param: { p },
+            param: {p}
           });
         }
       }
       pages.push({
-        title: "\u276F",
-        param: page < pageMax ? { p: page + 1 } : undefined,
+        title: '\u276F',
+        param: page < pageMax ? {p: page + 1} : undefined
       });
       pages.push({
-        title: "\u276F\u276F",
-        param: page < pageMax ? { p: Math.min(pageMax, pmax + 1) } : undefined,
+        title: '\u276F\u276F',
+        param: page < pageMax ? {p: Math.min(pageMax, pmax + 1)} : undefined
       });
       pages.push({
-        title: "\u276F\u2759",
-        param: page < pageMax ? { p: pageMax } : undefined,
+        title: '\u276F\u2759',
+        param: page < pageMax ? {p: pageMax} : undefined
       });
     } catch (error) {
-      console.log({ error });
+      console.log({error});
     } finally {
       clearTimeout(timeout);
       fallback = false;
@@ -173,7 +173,7 @@
         {#each items.length === 0 ? [{}] : items as item, i}
           <tr
             class={`text-center ${
-              i % 2 == 1 ? "bg-gray-50" : ""
+              i % 2 == 1 ? 'bg-gray-50' : ''
             } whitespace-nowrap`}
           >
             <td
@@ -188,16 +188,16 @@
       <tbody class="bg-white text-sm text-gray-500 text-left">
         {#each items as item, i}
           <tr
-            class={`whitespace-nowrap ${i % 2 == 1 ? "bg-gray-100" : ""}`}
+            class={`whitespace-nowrap ${i % 2 == 1 ? 'bg-gray-100' : ''}`}
             on:click={() =>
               navigate(
-                `${$location.pathname}/${item[config.primaryKey || "id"]}`,
+                `${$location.pathname}/${item[config.primaryKey || 'id']}`,
                 {}
               )}
           >
             {#each headers as f}
               <td class="px-6 py-1 border border-gray-300"
-                >{@html f.render ? f.render(item[f.id]) : item[f.id] || ""}</td
+                >{@html f.render ? f.render(item[f.id]) : item[f.id] || ''}</td
               >
             {/each}
           </tr>

@@ -1,8 +1,8 @@
 <script>
-  import { supabase } from "../supabase";
-  import AdminDetail from "./Detail.svelte";
-  import AdminInputText from "../form/InputText.svelte";
-  import AdminInputSelect from "../form/InputSelect.svelte";
+  import {supabase} from '../supabase';
+  import AdminDetail from './Detail.svelte';
+  import AdminInputText from '../form/InputText.svelte';
+  import AdminInputSelect from '../form/InputSelect.svelte';
 
   export let user;
   export let config;
@@ -18,25 +18,25 @@
     loading = true;
     try {
       if (!categories) {
-        let { data, error } = await supabase
-          .from("item_category_views")
-          .select("*");
+        let {data, error} = await supabase
+          .from('item_category_views')
+          .select('*');
         if (error) throw error;
         categories = data;
       }
-      let { data, error } = await supabase
-        .from("item_categories")
-        .select("*")
-        .eq(config.primaryKey || "id", params.id);
+      let {data, error} = await supabase
+        .from('item_categories')
+        .select('*')
+        .eq(config.primaryKey || 'id', params.id);
       if (error) throw error;
       if (data.length === 1) {
         item = data[0];
       } else {
         item = {};
       }
-      const getChilds = (parent_id) => {
+      const getChilds = parent_id => {
         const res = categories.filter(
-          (c) => c.parent_id === parent_id && c.id !== item?.id
+          c => c.parent_id === parent_id && c.id !== item?.id
         );
         const cres = [];
         for (const r of res) {
@@ -44,17 +44,15 @@
         }
         return [...res, ...cres];
       };
-      parents = getChilds(null).map((v) => ({
+      parents = getChilds(null).map(v => ({
         id: v.id,
-        name: v.full_name
-          .replaceAll("<", "&lt;")
-          .replaceAll(" || ", " &#187; "),
+        name: v.full_name.replaceAll('<', '&lt;').replaceAll(' || ', ' &#187; ')
       }));
       parents.sort((a, b) =>
         a.name === b.name ? 0 : a.name > b.name ? 1 : -1
       );
     } catch (error) {
-      console.log({ error });
+      console.log({error});
     } finally {
       loading = false;
     }
@@ -63,32 +61,32 @@
   async function saveData() {
     loading = true;
     try {
-      ["parent"].forEach((k) => {
-        if (item[k] === "") {
+      ['parent'].forEach(k => {
+        if (item[k] === '') {
           item[k] = null;
         }
       });
       const newItem = {
         ...item,
-        [config.primaryKey || "id"]: undefined,
+        [config.primaryKey || 'id']: undefined,
         updated_at: new Date().toISOString(),
-        updated_by: user.id,
+        updated_by: user.id
       };
-      let { data, error } = await supabase
-        .from("item_categories")
+      let {data, error} = await supabase
+        .from('item_categories')
         .update(newItem)
-        .eq(config.primaryKey || "id", parseInt(params.id));
+        .eq(config.primaryKey || 'id', parseInt(params.id));
       console.log({
         save: {
           item,
           data,
           newItem,
-          key: { [config.primaryKey || "id"]: params.id },
-          error,
-        },
+          key: {[config.primaryKey || 'id']: params.id},
+          error
+        }
       });
     } catch (error) {
-      console.log({ error });
+      console.log({error});
     } finally {
       loading = false;
     }
@@ -97,21 +95,21 @@
   async function deleteData() {
     loading = true;
     try {
-      let { data, error } = await supabase
-        .from("item_categories")
+      let {data, error} = await supabase
+        .from('item_categories')
         .delete()
-        .eq(config.primaryKey || "id", parseInt(params.id));
+        .eq(config.primaryKey || 'id', parseInt(params.id));
       console.log({
         delete: {
           item,
           data,
-          key: { [config.primaryKey || "id"]: params.id },
-          error,
-        },
+          key: {[config.primaryKey || 'id']: params.id},
+          error
+        }
       });
       history.back();
     } catch (error) {
-      console.log({ error });
+      console.log({error});
     } finally {
       loading = false;
     }

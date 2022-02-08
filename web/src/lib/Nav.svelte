@@ -1,13 +1,13 @@
 <script>
-  import { Link } from "svelte-navigator";
-  import { supabase } from "./supabase";
-  import { User } from "./store";
+  import {Link} from 'svelte-navigator';
+  import {supabase} from './supabase';
+  import {User} from './store';
 
   export let user;
 
   let loading = false;
-  let email = "";
-  let password = "";
+  let email = '';
+  let password = '';
 
   const login = async () => {
     try {
@@ -23,14 +23,14 @@
       const {
         user: cuser,
         session,
-        error,
+        error
       } = await supabase.auth.signIn({
         email,
-        password,
+        password
       });
       if (error) throw error;
-      console.log({ cuser, session, error });
-      User.signin({ ...session, ...cuser });
+      console.log({cuser, session, error});
+      User.signin({...session, ...cuser});
     } catch (error) {
       alert(error.error_description || error.message);
     } finally {
@@ -60,7 +60,7 @@
         window.scrollTo({
           top: 0,
           left: 0,
-          behavior: "smooth",
+          behavior: 'smooth'
         });
       }}
     >
@@ -88,14 +88,14 @@
           <button
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg w-full sm:w-auto px-5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             disabled={loading}
-            on:click={login}>{loading ? "Loading" : "LOGIN"}</button
+            on:click={login}>{loading ? 'Loading' : 'LOGIN'}</button
           >
         {:else}
           {user.email}
           <button
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg w-full sm:w-auto px-5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             disabled={loading}
-            on:click={logout}>{loading ? "Loading" : "LOGOUT"}</button
+            on:click={logout}>{loading ? 'Loading' : 'LOGOUT'}</button
           >
         {/if}
       </div>
