@@ -1,152 +1,114 @@
 <script lang="ts">
-  import {supabase} from '../supabase';
+  import {createEventDispatcher} from 'svelte';
   import {useNavigate, useLocation} from 'svelte-navigator';
+  import {parseURLQuery, urlQueryFilter} from '../store';
   import ListHeader from './ListHeader.svelte';
+  import ListPagination from './ListPagination.svelte';
 
   export let user;
-  export let config;
   export let entity;
-
+  export let param = {};
+  export let fields = [];
+  export let pageSize = 10;
+  export let primaryKey = 'id';
+  export let fetchData: ({}) => Promise<{data; count; error}>;
   const location = useLocation();
   const nav = useNavigate();
+  const dispatch = createEventDispatcher();
 
-  let param = {[entity]: {}};
   let loading = false;
   let fallback = false;
   let items = [];
   let itemsCount = 0;
-  let pageSize: number;
   let page: number;
-  let pageMax: number;
   let rangeStart: number;
   let rangeEnd: number;
-  let pages = [];
+  let filtered;
 
-  $: {
-    const loc = $location;
-    param[entity] = loc.search
-      .split('?')
-      .slice(-1)[0]
-      .split('&')
-      .map(v => v.split('='))
-      .reduce((acc, v) => {
-        acc[v[0]] = v[1];
-        return acc;
-      }, {});
-  }
-
-  let headers = (config.list?.fields || config.fields).map(v => ({
-    ...v,
-    title: v.name || v.id
-  }));
-
-  function navigate(p, q, clearQ = false) {
+  export function navigate(pathname, q, clearQ = false) {
     const loc = $location;
     if (!clearQ) {
-      q = {...param[entity], ...q};
+      q = {...param, ...q};
     }
     const qk = Object.keys(q);
     qk.sort();
     loading = true;
     nav(
-      `${p || loc.pathname}?${qk
-        .filter(k => k.length > 0)
+      `${pathname || loc.pathname}?${qk
+        .filter(k => k.length > 0 && q[k] !== null)
         .map(k => `${k}=${encodeURIComponent(q[k])}`)
         .join('&')}`
     );
   }
 
-  async function fetchData(_, entity, p) {
+  export function onFilter(event) {
+    const nq = Object.entries(event.detail || {}).reduce(
+      (acc, [k, v]) => {
+        if (v) {
+          acc[`fi:${k}`] = v;
+        }
+        return acc;
+      },
+      Object.entries(param).reduce((acc, [k, v]) => {
+        if (!k.startsWith('fi:') && k !== 'p') {
+          acc[k] = v;
+        }
+        return acc;
+      }, {})
+    );
+    navigate(null, nq, true);
+  }
+
+  function open(event, item) {
+    if (!loading) {
+      const el = event.srcElement.parentElement;
+      const elr = el.getBoundingClientRect();
+      navigate(null, {
+        id: item[primaryKey],
+        bottom: elr.top + elr.height + window.scrollY
+      });
+    }
+  }
+
+  async function loadData(_, entity, param) {
     loading = true;
     const timeout = setTimeout(() => {
       fallback = true;
     }, 200);
     try {
-      const param = p[entity] || (p[entity] = {});
-      pageSize = Math.min(100, param.ps ?? config.list?.pageSize ?? 10);
-      const pagingSize = Math.min(
-        20,
-        param.pgs ?? config.list?.pagingSize ?? 10
-      );
-      const pagingSize1 = pageSize - 1;
-      const pagingSize2 = Math.floor(pageSize / 2);
+      pageSize = Math.min(100, param.ps ?? pageSize);
       page = parseInt(param.p ?? 1);
       rangeStart = (page - 1) * pageSize;
       rangeEnd = rangeStart + pageSize - 1;
-      const orderField = param.of || config.primaryKey || 'id';
+      const orderField = param.of || primaryKey || 'id';
       const orderAsc = (param.oa ?? 'a') === 'a';
-      let {data, count, error} = await supabase
-        .from(config?.list?.entity || config?.entity || entity)
-        .select(config?.list?.select || '*', {count: 'exact'})
-        .order(orderField, {ascending: orderAsc})
-        .range(rangeStart, rangeEnd);
-      console.log({entity, config, param, data, count, error});
-      headers = (config.list?.fields || config.fields).map(v => {
-        const nv = {...v};
-        if (nv.id === orderField) {
-          nv.sort = orderAsc ? 'a' : 'd';
-          nv.param = {
-            of: v.id,
+      let {data, count, error} = await fetchData({
+        orderField,
+        orderAsc,
+        rangeStart,
+        rangeEnd
+      });
+      fields = fields.map(f => {
+        if (f.id === orderField) {
+          f.sort = orderAsc ? 'a' : 'd';
+          f.param = {
+            of: f.id,
             oa: orderAsc ? 'd' : 'a'
           };
-        } else if (v.sortable) {
-          nv.param = {
+        } else if (f.sortable) {
+          f.sort = null;
+          f.param = {
             ...param,
-            of: v.id,
+            of: f.id,
             oa: 'a'
           };
         }
-        nv.title = v.name || v.id;
-        return nv;
+        return f;
       });
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       if (error) throw error;
       items = data;
       itemsCount = count;
-      pageMax = Math.floor((itemsCount + pageSize - 1) / pageSize);
-      let pmin = Math.max(1, page - pagingSize2);
-      const pmax = Math.min(pageMax, pmin + pagingSize1);
-      pmin = Math.max(1, pmax - pagingSize1);
-      pages = [];
-      pages.push({
-        title: '+',
-        link: '--NEW--',
-        param: {}
-      });
-      pages.push({
-        title: '\u2759\u276E',
-        param: page > 1 ? {p: 1} : undefined
-      });
-      pages.push({
-        title: '\u276E\u276E',
-        param: page > 1 ? {p: Math.max(1, pmin - 1)} : undefined
-      });
-      pages.push({
-        title: '\u276E',
-        param: page > 1 ? {p: page - 1} : undefined
-      });
-      for (let p = pmin; p <= pmax; p++) {
-        if (p === page) {
-          pages.push({title: String(p)});
-        } else {
-          pages.push({
-            title: String(p),
-            param: {p}
-          });
-        }
-      }
-      pages.push({
-        title: '\u276F',
-        param: page < pageMax ? {p: page + 1} : undefined
-      });
-      pages.push({
-        title: '\u276F\u276F',
-        param: page < pageMax ? {p: Math.min(pageMax, pmax + 1)} : undefined
-      });
-      pages.push({
-        title: '\u276F\u2759',
-        param: page < pageMax ? {p: pageMax} : undefined
-      });
     } catch (error) {
       console.log({error});
     } finally {
@@ -157,15 +119,25 @@
   }
 
   $: {
-    fetchData(user, entity, param);
+    const loc = $location;
+    param = parseURLQuery(loc.search);
+    const filter = urlQueryFilter(param);
+    filtered = filter && Object.entries(filter).length > 0;
+    loadData(user, entity, param);
   }
 </script>
 
 <div>
   <table class="w-full table-fixed border border-gray-300">
     <thead class="bg-black">
-      {#each headers as h}
-        <ListHeader {h} {navigate} />
+      {#each fields as field, i}
+        <ListHeader
+          {field}
+          {navigate}
+          {filtered}
+          last={i === fields.length - 1}
+          on:search={e => dispatch('search', e.detail)}
+        />
       {/each}
     </thead>
     {#if fallback}
@@ -177,7 +149,7 @@
             } whitespace-nowrap`}
           >
             <td
-              colspan={headers.length}
+              colspan={fields.length}
               class="px-6 py-1 text-sm text-gray-500 border border-gray-300"
               >Loading...</td
             >
@@ -188,14 +160,11 @@
       <tbody class="bg-white text-sm text-gray-500 text-left">
         {#each items as item, i}
           <tr
+            id={`list-${item[primaryKey]}`}
             class={`whitespace-nowrap ${i % 2 == 1 ? 'bg-gray-100' : ''}`}
-            on:click={() =>
-              navigate(
-                `${$location.pathname}/${item[config.primaryKey || 'id']}`,
-                {}
-              )}
+            on:click={e => open(e, item)}
           >
-            {#each headers as f}
+            {#each fields as f}
               <td class="px-6 py-1 border border-gray-300"
                 >{@html f.render ? f.render(item[f.id]) : item[f.id] || ''}</td
               >
@@ -205,28 +174,18 @@
       </tbody>
     {/if}
     <tfoot class="bg-gray-300">
-      <td colspan={headers.length} class="text-xs">
-        <table class="w-full">
-          <tr>
-            <td class="px-2 py-2 text-xs text-left">
-              Showing {rangeStart + 1} to {rangeStart + items.length} of {itemsCount}
-              entries</td
-            >
-            <td class="px-2 py-2 text-xs text-right font-bold">
-              {#each pages as p}
-                {#if p.param}
-                  <span
-                    class="px-2 py-2 text-blue-700 cursor-pointer"
-                    on:click={() => navigate(p.link, p.param)}>{p.title}</span
-                  >
-                {:else}
-                  <span class="px-2 py-2 text-black">{p.title}</span>
-                {/if}
-              {/each}
-            </td>
-          </tr>
-        </table>
+      <td colspan={fields.length} class="text-xs">
+        <ListPagination
+          {pageSize}
+          {page}
+          {navigate}
+          {rangeStart}
+          rangeEnd={rangeStart + items.length}
+          {itemsCount}
+        />
       </td>
     </tfoot>
   </table>
 </div>
+<slot name="filter" />
+<slot name="detail" />

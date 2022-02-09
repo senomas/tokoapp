@@ -29,7 +29,6 @@
         password
       });
       if (error) throw error;
-      console.log({cuser, session, error});
       User.signin({...session, ...cuser});
     } catch (error) {
       alert(error.error_description || error.message);
@@ -67,7 +66,6 @@
       <h2 class="ml-3 text-xl">ABC</h2>
     </a>
     <nav class="md:mx-auto flex flex-wrap items-center justify-center">
-      <Link class="mr-5" to="/Home">Home</Link>
       <Link class="mr-5" to="/admin/item-category">Item Category</Link>
       <Link class="mr-5" to="/admin/item">Item</Link>
       <Link class="mr-5" to="about">About</Link>

@@ -1,20 +1,25 @@
 <script>
   import {supabase} from '../supabase';
-  import AdminDetail from './Detail.svelte';
-  import AdminInputText from '../form/InputText.svelte';
-  import AdminInputSelect from '../form/InputSelect.svelte';
+  import Detail from './Detail.svelte';
+  import InputText from '../form/InputText.svelte';
+  import InputSelect from '../form/InputSelect.svelte';
 
   export let user;
-  export let config;
-  export let params;
+  export let id;
+  export let primaryKey;
+  export let navigate;
+  export let top = '10rem';
 
   let categories = null;
-  let parents = null;
+  let parents = [];
   let validate = {};
-  let item = {};
   let loading = false;
+  let visible;
 
-  async function fetchData(_, params) {
+  let item = {};
+  let name = id;
+
+  async function fetchData(_, id) {
     loading = true;
     try {
       if (!categories) {
@@ -24,33 +29,39 @@
         if (error) throw error;
         categories = data;
       }
-      let {data, error} = await supabase
-        .from('item_categories')
-        .select('*')
-        .eq(config.primaryKey || 'id', params.id);
-      if (error) throw error;
-      if (data.length === 1) {
-        item = data[0];
-      } else {
+      if (!id || id === '__NEW__') {
         item = {};
-      }
-      const getChilds = parent_id => {
-        const res = categories.filter(
-          c => c.parent_id === parent_id && c.id !== item?.id
-        );
-        const cres = [];
-        for (const r of res) {
-          cres.push(...getChilds(r.id));
+        parents = categories.map(v => ({
+          id: v.id,
+          name: v.full_name
+        }));
+      } else {
+        let {data, error} = await supabase
+          .from('item_categories')
+          .select('*')
+          .eq(primaryKey, id);
+        const getChilds = parent_id => {
+          const r = categories.filter(
+            v => v.parent_id === parent_id && v.id !== id
+          );
+          const rs = [];
+          r.forEach(v => {
+            rs.push(...getChilds(v.id));
+          });
+          return [...r, ...rs];
+        };
+        parents = getChilds(null).map(v => ({
+          id: v.id,
+          name: v.full_name
+        }));
+        if (error) throw error;
+        if (data.length === 1) {
+          item = data[0];
+          name = item.name;
+        } else {
+          item = {};
         }
-        return [...res, ...cres];
-      };
-      parents = getChilds(null).map(v => ({
-        id: v.id,
-        name: v.full_name.replaceAll('<', '&lt;').replaceAll(' || ', ' &#187; ')
-      }));
-      parents.sort((a, b) =>
-        a.name === b.name ? 0 : a.name > b.name ? 1 : -1
-      );
+      }
     } catch (error) {
       console.log({error});
     } finally {
@@ -61,30 +72,38 @@
   async function saveData() {
     loading = true;
     try {
-      ['parent'].forEach(k => {
-        if (item[k] === '') {
-          item[k] = null;
-        }
-      });
-      const newItem = {
-        ...item,
-        [config.primaryKey || 'id']: undefined,
-        updated_at: new Date().toISOString(),
-        updated_by: user.id
-      };
-      let {data, error} = await supabase
-        .from('item_categories')
-        .update(newItem)
-        .eq(config.primaryKey || 'id', parseInt(params.id));
-      console.log({
-        save: {
-          item,
-          data,
-          newItem,
-          key: {[config.primaryKey || 'id']: params.id},
-          error
-        }
-      });
+      console.log({saveData: {id, item}});
+      if (id === '__NEW__') {
+        let {data, error} = await supabase.from('item_categories').insert(item);
+        console.log({
+          insert: {
+            item,
+            data,
+            error
+          }
+        });
+      } else {
+        const newItem = {
+          ...item,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id,
+          [primaryKey]: undefined
+        };
+        let {data, error} = await supabase
+          .from('items')
+          .update(newItem)
+          .eq(primaryKey, id);
+        console.log({
+          update: {
+            item,
+            data,
+            newItem,
+            key: {[primaryKey]: id},
+            error
+          }
+        });
+      }
+      navigate(null, {id: null});
     } catch (error) {
       console.log({error});
     } finally {
@@ -98,16 +117,16 @@
       let {data, error} = await supabase
         .from('item_categories')
         .delete()
-        .eq(config.primaryKey || 'id', parseInt(params.id));
+        .eq(primaryKey, id);
       console.log({
         delete: {
           item,
           data,
-          key: {[config.primaryKey || 'id']: params.id},
+          key: {[primaryKey]: id},
           error
         }
       });
-      history.back();
+      navigate(null, {id: null});
     } catch (error) {
       console.log({error});
     } finally {
@@ -116,52 +135,55 @@
   }
 
   $: {
-    fetchData(user, params);
+    visible = !!id;
+    fetchData(user, parseInt(id));
   }
 </script>
 
-<svelte:head>
-  <title>TokoAPP - Item Category {params.id}</title>
-  <meta name="robots" content="noindex nofollow" />
-  <html lang="en" />
-</svelte:head>
-
-<AdminDetail {config} {params} {loading} {saveData} {deleteData}>
+<Detail
+  title={id && id !== '__NEW__'
+    ? `Item Category "${name || id}"`
+    : 'New Item Category'}
+  {visible}
+  {loading}
+  {id}
+  {name}
+  {navigate}
+  {top}
+  on:save={saveData}
+  on:delete={deleteData}
+>
   <div class="flex flex-wrap -mx-3 mb-6">
-    <AdminInputText
-      id="id"
-      label="ID"
-      {loading}
-      bind:value={item.id}
-      validate={validate.id}
-      readonly={true}
-      class="md:w-1/2"
-    />
-    <AdminInputSelect
+    {#if id && id !== '__NEW__'}
+      <InputText
+        id="id"
+        {loading}
+        bind:value={item.id}
+        validate={validate.id}
+        readonly={true}
+        class="md:w-1/2"
+      />
+    {/if}
+    <InputSelect
       id="parent"
-      label="Parent"
       {loading}
       bind:value={item.parent_id}
       options={parents}
       validate={validate.name}
       class="md:w-1/2"
     />
-    <AdminInputText
+    <InputText
       id="name"
-      label="Name"
       {loading}
       bind:value={item.name}
       validate={validate.name}
       class="md:w-1/2"
     />
-  </div>
-  <div class="flex flex-wrap -mx-3">
-    <AdminInputText
+    <InputText
       id="description"
-      label="Description"
       {loading}
       bind:value={item.description}
       validate={validate.description}
     />
   </div>
-</AdminDetail>
+</Detail>

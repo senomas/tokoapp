@@ -1,19 +1,24 @@
 <script>
   import {supabase} from '../supabase';
-  import AdminDetail from './Detail.svelte';
+  import Detail from './Detail.svelte';
   import InputText from '../form/InputText.svelte';
   import InputSelect from '../form/InputSelect.svelte';
 
   export let user;
-  export let config;
-  export let params;
+  export let id;
+  export let primaryKey;
+  export let navigate;
+  export let top = '10rem';
 
   let categories = null;
   let validate = {};
-  let item = {};
   let loading = false;
+  let visible;
 
-  async function fetchData(_, params) {
+  let item = {};
+  let name = id;
+
+  async function fetchData(_, id) {
     loading = true;
     try {
       if (!categories) {
@@ -24,21 +29,19 @@
         categories = data.map(v => ({
           id: v.id,
           name: v.full_name
-            .replaceAll('<', '&lt;')
-            .replaceAll(' || ', ' &#187; ')
         }));
       }
-      if (params.id === '--NEW--') {
+      if (!id || id === '__NEW__') {
         item = {};
       } else {
         let {data, error} = await supabase
           .from('items')
           .select('*')
-          .eq(config.primaryKey || 'id', params.id);
-        console.log({data, error});
+          .eq(primaryKey, id);
         if (error) throw error;
         if (data.length === 1) {
           item = data[0];
+          name = item.name;
         } else {
           item = {};
         }
@@ -53,12 +56,8 @@
   async function saveData() {
     loading = true;
     try {
-      ['category_id'].forEach(k => {
-        if (item[k] === '') {
-          item[k] = null;
-        }
-      });
-      if (params.id === '--NEW--') {
+      console.log({saveData: {id, item}});
+      if (id === '__NEW__') {
         let {data, error} = await supabase.from('items').insert(item);
         console.log({
           insert: {
@@ -72,23 +71,23 @@
           ...item,
           updated_at: new Date().toISOString(),
           updated_by: user.id,
-          [config.primaryKey || 'id']: undefined
+          [primaryKey]: undefined
         };
         let {data, error} = await supabase
           .from('items')
           .update(newItem)
-          .eq(config.primaryKey || 'id', parseInt(params.id));
+          .eq(primaryKey, id);
         console.log({
           update: {
             item,
             data,
             newItem,
-            key: {[config.primaryKey || 'id']: params.id},
+            key: {[primaryKey]: id},
             error
           }
         });
       }
-      history.back();
+      navigate(null, {id: null});
     } catch (error) {
       console.log({error});
     } finally {
@@ -102,16 +101,16 @@
       let {data, error} = await supabase
         .from('items')
         .delete()
-        .eq(config.primaryKey || 'id', parseInt(params.id));
+        .eq(primaryKey, id);
       console.log({
         delete: {
           item,
           data,
-          key: {[config.primaryKey || 'id']: params.id},
+          key: {[primaryKey]: id},
           error
         }
       });
-      history.back();
+      navigate(null, {id: null});
     } catch (error) {
       console.log({error});
     } finally {
@@ -120,30 +119,35 @@
   }
 
   $: {
-    fetchData(user, params);
+    visible = !!id;
+    fetchData(user, id);
   }
 </script>
 
-<svelte:head>
-  <title>TokoAPP - Item {params.id}</title>
-  <meta name="robots" content="noindex nofollow" />
-  <html lang="en" />
-</svelte:head>
-
-<AdminDetail {config} {params} {loading} {saveData} {deleteData}>
+<Detail
+  title={id && id !== '__NEW__' ? `Item "${name || id}"` : 'New Item'}
+  {visible}
+  {loading}
+  {id}
+  {name}
+  {navigate}
+  {top}
+  on:save={saveData}
+  on:delete={deleteData}
+>
   <div class="flex flex-wrap -mx-3 mb-6">
-    <InputText
-      id="id"
-      label="ID"
-      {loading}
-      bind:value={item.id}
-      validate={validate.id}
-      readonly={true}
-      class="md:w-1/2"
-    />
+    {#if id && id !== '__NEW__'}
+      <InputText
+        id="id"
+        {loading}
+        bind:value={item.id}
+        validate={validate.id}
+        readonly={true}
+        class="md:w-1/2"
+      />
+    {/if}
     <InputSelect
       id="category"
-      label="Category"
       {loading}
       bind:value={item.category_id}
       options={categories}
@@ -152,20 +156,16 @@
     />
     <InputText
       id="name"
-      label="Name"
       {loading}
       bind:value={item.name}
       validate={validate.name}
       class="md:w-1/2"
     />
-  </div>
-  <div class="flex flex-wrap -mx-3">
     <InputText
       id="description"
-      label="Description"
       {loading}
       bind:value={item.description}
       validate={validate.description}
     />
   </div>
-</AdminDetail>
+</Detail>
