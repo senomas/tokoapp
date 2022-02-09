@@ -43,11 +43,13 @@
   let param: any = {};
   let id;
   let filter;
+  let top;
   $: {
     const loc = $location;
     param = parseURLQuery(loc.search);
     filter = urlQueryFilter(param);
     id = param[primaryKey];
+    top = param.bottom || null;
   }
 
   function onFilter(event) {
@@ -68,6 +70,7 @@
     let {data, count, error} = await select
       .order(orderField, {ascending: orderAsc})
       .range(rangeStart, rangeEnd);
+    console.log({data, count, error});
     return {data, count, error};
   }
 </script>
@@ -92,7 +95,7 @@
     slot="detail"
     {user}
     {id}
-    top={`${param.bottom}px`}
+    {top}
     {primaryKey}
     navigate={(p, q) => listComp.navigate(p, q)}
   />

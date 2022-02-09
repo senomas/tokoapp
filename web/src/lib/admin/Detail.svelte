@@ -7,20 +7,27 @@
   export let visible;
   export let title;
   export let id;
-  export let top;
+  export let top = null;
   export let name;
   export let loading;
-
   export let navigate;
 
   let deleteConfirm;
+  let style;
+
+  $: {
+    if (top) {
+      style = `position: absolute; top: ${top}px; left: 50%; -ms-transform: translate(-50%, 0%); transform: translate(-50%, 0%);`;
+    } else {
+      style =
+        'position: absolute; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);';
+    }
+  }
 </script>
 
 {#if visible}
   <div class="veil" />
-  <div
-    style="position: absolute; top:{top}; left: 50%; -ms-transform: translate(-50%, 0%); transform: translate(-50%, 0%);"
-  >
+  <div {style}>
     <div class="w-full bg-black text-white px-6 py-2">{title}</div>
     <div class="bg-white px-6 py-6 border border-gray-500">
       <div class="w-full flex bg-white">
@@ -54,21 +61,21 @@
           type="submit"
           class="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-2 text-white py-1 px-5 rounded"
           disabled={loading}
-          on:click={() => dispatch('save', null)}>Save</button
+          on:click={e => dispatch('save', e)}>Save</button
         >
         {#if id && id !== '__NEW__'}
           <button
             class="flex-shrink-0 bg-red-500 hover:bg-red-700 border-red-500 hover:border-red-700 text-sm border-2 text-white py-1 px-5 rounded"
             disabled={loading}
-            on:click={e =>
-              deleteConfirm.show(e, () => dispatch('delete', null))}
+            on:click={e => deleteConfirm.show(e, () => dispatch('delete', e))}
             >Delete</button
           >
         {/if}
         <div class="grow text-right">
           <button
             class="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-2 text-white py-1 px-5 rounded"
-            on:click={() => navigate(null, {id: null})}>Close</button
+            on:click={() => navigate(null, {id: null, bottom: null})}
+            >Close</button
           >
         </div>
       {/if}

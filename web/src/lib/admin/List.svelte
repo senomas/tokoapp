@@ -88,6 +88,7 @@
         rangeStart,
         rangeEnd
       });
+      if (error) throw error;
       fields = fields.map(f => {
         if (f.id === orderField) {
           f.sort = orderAsc ? 'a' : 'd';
@@ -106,10 +107,17 @@
         return f;
       });
       // await new Promise((resolve) => setTimeout(resolve, 1000));
-      if (error) throw error;
       items = data;
       itemsCount = count;
     } catch (error) {
+      if (error.length === 0) {
+        if (page > 1) {
+          navigate(null, {p: 1});
+          return;
+        } else {
+          return;
+        }
+      }
       console.log({error});
     } finally {
       clearTimeout(timeout);

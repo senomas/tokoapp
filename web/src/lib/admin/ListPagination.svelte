@@ -59,8 +59,12 @@
 
 <div class="w-full flex">
   <div class="px-2 py-2 text-xs text-left">
-    Showing {rangeStart + 1} to {rangeEnd} of {itemsCount}
-    entries
+    {#if itemsCount > 0}
+      Showing {rangeStart + 1} to {rangeEnd} of {itemsCount}
+      entries
+    {:else}
+      Showing 0 entries
+    {/if}
   </div>
   <div class="grow px-2 py-2 text-xs text-right font-bold">
     {#each pages as p}

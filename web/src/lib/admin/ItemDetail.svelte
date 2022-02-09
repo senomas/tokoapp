@@ -3,12 +3,13 @@
   import Detail from './Detail.svelte';
   import InputText from '../form/InputText.svelte';
   import InputSelect from '../form/InputSelect.svelte';
+  import Error from './Error.svelte';
 
   export let user;
   export let id;
   export let primaryKey;
   export let navigate;
-  export let top = '10rem';
+  export let top = null;
 
   let categories = null;
   let validate = {};
@@ -17,6 +18,9 @@
 
   let item = {};
   let name = id;
+
+  let errorComp;
+  let errorMessage;
 
   async function fetchData(_, id) {
     loading = true;
@@ -53,7 +57,7 @@
     }
   }
 
-  async function saveData() {
+  async function saveData(event) {
     loading = true;
     try {
       console.log({saveData: {id, item}});
@@ -66,9 +70,17 @@
             error
           }
         });
+        if (error) throw error;
       } else {
         const newItem = {
-          ...item,
+          ...Object.entries(item).reduce((acc, [k, v]) => {
+            if (v === '') {
+              acc[k] = null;
+            } else {
+              acc[k] = v;
+            }
+            return acc;
+          }, {}),
           updated_at: new Date().toISOString(),
           updated_by: user.id,
           [primaryKey]: undefined
@@ -86,22 +98,28 @@
             error
           }
         });
+        if (error) throw error;
       }
       navigate(null, {id: null});
     } catch (error) {
-      console.log({error});
+      console.log({event, error});
+      errorMessage = error.message || 'System Error';
+      errorComp.show(event.detail);
     } finally {
       loading = false;
     }
   }
 
-  async function deleteData() {
+  async function deleteData(event) {
     loading = true;
     try {
       let {data, error} = await supabase
         .from('items')
         .delete()
         .eq(primaryKey, id);
+      if (error) throw error;
+      if (data.length === 0)
+        throw {message: `Unable to delete Item "${name || id}"`};
       console.log({
         delete: {
           item,
@@ -112,7 +130,9 @@
       });
       navigate(null, {id: null});
     } catch (error) {
-      console.log({error});
+      console.log({event, error});
+      errorMessage = error.message || 'System Error';
+      errorComp.show(event.detail);
     } finally {
       loading = false;
     }
@@ -132,8 +152,8 @@
   {name}
   {navigate}
   {top}
-  on:save={saveData}
-  on:delete={deleteData}
+  on:save={e => saveData(e)}
+  on:delete={e => deleteData(e)}
 >
   <div class="flex flex-wrap -mx-3 mb-6">
     {#if id && id !== '__NEW__'}
@@ -169,3 +189,5 @@
     />
   </div>
 </Detail>
+
+<Error bind:this={errorComp}>{errorMessage}</Error>
