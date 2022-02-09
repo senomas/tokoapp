@@ -15,6 +15,7 @@ CREATE TABLE item_categories (
   parent_id INT REFERENCES item_categories,
   name TEXT NOT NULL,
   description TEXT,
+  CONSTRAINT item_categories_check CHECK (char_length(name) >= 3 AND char_length(name) < 255),
   CONSTRAINT item_categories__name UNIQUE(parent_id, name)
 );
 
@@ -107,6 +108,7 @@ CREATE TABLE items (
   category_id INT REFERENCES item_categories,
   name TEXT NOT NULL,
   description TEXT,
+  CONSTRAINT items_check CHECK (char_length(name) >= 3 AND char_length(name) < 255),
   CONSTRAINT items__name UNIQUE(category_id, name)
 );
 
@@ -157,7 +159,7 @@ AS $$
     ic.full_name AS category
   FROM
     items i 
-    INNER JOIN item_category_views ic ON i.category_id = ic.id;
+    LEFT JOIN item_category_views ic ON i.category_id = ic.id;
 $$;
 
 CREATE VIEW item_views AS SELECT * FROM fn_item_views();
