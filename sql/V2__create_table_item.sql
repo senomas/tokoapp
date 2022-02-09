@@ -84,7 +84,7 @@ AS $$
       e.parent_id,
       rl.name AS parent,
       e.name,
-      rl.name || ' || ' || e.name AS full_name,
+      rl.name || E' \u00BB ' || e.name AS full_name,
       e.description,
       e.created_at,
       e.created_by,
