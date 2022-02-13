@@ -1,25 +1,30 @@
 <script>
+  import Filter from '../admin/Filter.svelte';
+  import {cl} from '../store';
+
   export let loading;
   export let id;
   export let label = id;
-  export let value = null;
+  export let model = {};
   export let options;
   export let validate;
+
+  let focus = false;
 </script>
 
-<div class={`w-full ${$$props.class || 'md:w-1/2'} px-3 py-1`}>
-  <label
-    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-    for={`grid-${id}`}>{label}</label
-  >
+<div class={cl(['w-full relative my-3', $$props.class])}>
   <div class="relative">
+    <label
+      class="peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 
+    peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm
+    block text-gray-700 text-sm absolute left-0 -top-3.5 transition-all"
+      for={id}>{label}</label
+    >
     <select
-      class="block appearance-none w-full bg-gray-200 border  ${validate
-        ? 'border-red-500'
-        : 'border-gray-200'} text-gray-700 py-1 px-2 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-      id="grid-category"
+      class="peer w-full h-10 border-b-2 border-gray-300 focus:outline-none focus:border-gray-500 placeholder-transparent"
+      {id}
       disabled={loading}
-      bind:value
+      bind:value={model[id]}
       required
     >
       <option value="" />
@@ -30,7 +35,7 @@
       {/if}
     </select>
     <div
-      class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+      class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-gray-700"
     >
       <svg
         class="fill-current h-4 w-4"
@@ -42,7 +47,7 @@
       >
     </div>
   </div>
-  {#if validate}
-    <p class="text-red-500 text-xs italic">{validate}</p>
+  {#if validate[id]}
+    <p class="text-red-500 text-xs italic">{validate[id]}</p>
   {/if}
 </div>

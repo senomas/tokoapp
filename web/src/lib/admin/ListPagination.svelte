@@ -1,5 +1,6 @@
 <script lang="ts">
   export let navigate;
+  export let allowCreate;
   export let pageSize;
   export let page;
   export let rangeStart = 0;
@@ -16,10 +17,12 @@
     const pmax = Math.min(pageMax, pmin + pagingSize1);
     pmin = Math.max(1, pmax - pagingSize1);
     pages = [];
-    pages.push({
-      title: '+',
-      param: {id: '__NEW__'}
-    });
+    if (allowCreate) {
+      pages.push({
+        title: '+',
+        param: {id: '__NEW__'}
+      });
+    }
     pages.push({
       title: '\u2759\u276E',
       param: page > 1 ? {p: 1} : undefined

@@ -13,10 +13,10 @@
 
   export function show(e) {
     const elr = e.srcElement.getBoundingClientRect();
-    const vlr = document.getElementById('list-filter').getBoundingClientRect();
     top = `${Math.max(1, e.y + window.scrollY)}px`;
-    left = `${Math.max(1, e.x - vlr.width + window.scrollX)}px`;
-    translate = '';
+    left = `${Math.max(1, e.x + window.scrollX)}px`;
+    translate =
+      '-ms-transform: translate(-100%, 0%); transform: translate(-100%, 0%);';
     visible = true;
   }
 
@@ -35,7 +35,6 @@
   <div class="veil" />
 {/if}
 <div
-  id="list-filter"
   style="position: absolute; visibility: {visible
     ? 'visible'
     : 'hidden'}; top:{top}; left:{left}; {translate}"

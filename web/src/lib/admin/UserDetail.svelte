@@ -152,7 +152,6 @@
   {name}
   {navigate}
   {top}
-  on:reset={e => fetchData(user, id)}
   on:save={e => saveData(e)}
   on:delete={e => deleteData(e)}
 >
@@ -161,22 +160,33 @@
       <InputText
         id="id"
         {loading}
-        bind:model={item}
-        {validate}
+        bind:value={item.id}
+        validate={validate.id}
         readonly={true}
+        class="md:w-1/2"
       />
-      <!-- class="md:w-1/2" -->
     {/if}
     <InputSelect
-      id="category_id"
-      label="category"
+      id="category"
       {loading}
-      bind:model={item}
+      bind:value={item.category_id}
       options={categories}
-      {validate}
+      validate={validate.name}
+      class="md:w-1/2"
     />
-    <InputText id="name" {loading} bind:model={item} {validate} />
-    <InputText id="description" {loading} bind:model={item} {validate} />
+    <InputText
+      id="name"
+      {loading}
+      bind:value={item.name}
+      validate={validate.name}
+      class="md:w-1/2"
+    />
+    <InputText
+      id="description"
+      {loading}
+      bind:value={item.description}
+      validate={validate.description}
+    />
   </div>
 </Detail>
 

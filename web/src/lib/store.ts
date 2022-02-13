@@ -40,3 +40,10 @@ export function urlQueryFilter(param) {
     return acc;
   }, {});
 }
+
+export function cl(value) {
+  if (Array.isArray(value)) {
+    return value.filter(v => !!v).join(' ');
+  }
+  return value;
+}

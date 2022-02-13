@@ -49,9 +49,7 @@
 </script>
 
 <header class="text-gray-600 body-font">
-  <div
-    class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center"
-  >
+  <div class="mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
     <a
       class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0"
       href="/"
@@ -66,6 +64,7 @@
       <h2 class="ml-3 text-xl">ABC</h2>
     </a>
     <nav class="md:mx-auto flex flex-wrap items-center justify-center">
+      <Link class="mr-5" to="/admin/user">User</Link>
       <Link class="mr-5" to="/admin/item-category">Item Category</Link>
       <Link class="mr-5" to="/admin/item">Item</Link>
       <Link class="mr-5" to="about">About</Link>

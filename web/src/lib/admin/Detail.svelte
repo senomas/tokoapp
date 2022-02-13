@@ -44,6 +44,11 @@
           class="flex-shrink-0 bg-gray-500 hover:bg-gray-700 border-gray-500 hover:border-gray-700 text-sm border-2 text-white py-1 px-5 rounded"
           disabled>Save</button
         >
+        <button
+          class="flex-shrink-0 bg-gray-500 hover:bg-gray-700 border-gray-500 hover:border-gray-700 text-sm border-2 text-white py-1 px-5 rounded"
+          disabled={loading}
+          on:click={e => dispatch('reset', e)}>Reset</button
+        >
         {#if id && id !== '__NEW__'}
           <button
             class="flex-shrink-0 bg-red-500 hover:bg-red-200 border-red-200 hover:border-red-200 text-sm border-2 text-white py-1 px-5 rounded"
@@ -62,6 +67,11 @@
           class="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-2 text-white py-1 px-5 rounded"
           disabled={loading}
           on:click={e => dispatch('save', e)}>Save</button
+        >
+        <button
+          class="flex-shrink-0 bg-yellow-500 hover:bg-yellow-700 border-yellow-500 hover:border-yellow-700 text-sm border-2 text-white py-1 px-5 rounded"
+          disabled={loading}
+          on:click={e => dispatch('reset', e)}>Reset</button
         >
         {#if id && id !== '__NEW__'}
           <button

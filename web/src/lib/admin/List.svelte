@@ -11,6 +11,7 @@
   export let fields = [];
   export let pageSize = 10;
   export let primaryKey = 'id';
+  export let allowCreate = true;
   export let fetchData: ({}) => Promise<{data; count; error}>;
   const location = useLocation();
   const nav = useNavigate();
@@ -184,6 +185,7 @@
     <tfoot class="bg-gray-300">
       <td colspan={fields.length} class="text-xs">
         <ListPagination
+          {allowCreate}
           {pageSize}
           {page}
           {navigate}

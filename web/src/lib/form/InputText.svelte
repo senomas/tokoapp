@@ -1,35 +1,29 @@
 <script>
+  import {cl} from '../store';
+
   export let loading = false;
   export let id;
   export let label = id;
-  export let value = null;
-  export let validate = null;
-
-  let props = {...$$props};
-  delete props.loading;
-  delete props.id;
-  delete props.label;
-  delete props.value;
-  delete props.class;
-  delete props.validate;
+  export let model = {};
+  export let validate = {};
 </script>
 
-<div class={`w-full ${$$props.class || ''} px-3 py-1`}>
-  <label
-    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-    for={id}>{label}</label
-  >
+<div class={cl(['w-full relative my-3', $$props.class])}>
   <input
-    class={`appearance-none block w-full bg-gray-200 text-gray-700 border ${
-      validate ? 'border-red-500' : 'border-gray-200'
-    } rounded py-1 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500`}
+    class="peer w-full h-10 border-b-2 border-gray-300 focus:outline-none focus:border-gray-500 placeholder-transparent"
     {id}
     type="text"
     disabled={loading}
-    bind:value
-    {...props}
+    bind:value={model[id]}
+    placeholder={label}
   />
-  {#if validate}
-    <p class="text-red-500 text-xs italic">{validate}</p>
+  <label
+    class="peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 
+    peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm
+    block text-gray-700 text-sm absolute left-0 -top-3.5 transition-all"
+    for={id}>{label}</label
+  >
+  {#if validate[id]}
+    <p class="text-red-500 text-xs italic">{validate[id]}</p>
   {/if}
 </div>
