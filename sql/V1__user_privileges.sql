@@ -2,6 +2,9 @@ DROP TABLE IF EXISTS app_roles CASCADE;
 DROP TABLE IF EXISTS app_role_permissions CASCADE;
 DROP TABLE IF EXISTS app_permissions CASCADE;
 DROP TABLE IF EXISTS user_app_roles CASCADE;
+DROP VIEW  IF EXISTS user_views CASCADE;
+DROP FUNCTION  IF EXISTS fn_user_views CASCADE;
+
 
 CREATE TABLE app_roles (
   id SERIAL NOT NULL PRIMARY KEY,
@@ -71,7 +74,40 @@ CREATE POLICY "allow update app_role_permissions to users based on email" ON pub
 CREATE POLICY "allow insert app_role_permissions to users based on email" ON public.app_role_permissions FOR INSERT WITH CHECK (auth.email() LIKE '%@senomas.com');
 CREATE POLICY "allow delete app_role_permissions to users based on email" ON public.app_role_permissions FOR DELETE USING (auth.email() LIKE '%@senomas.com');
 
+
+
+CREATE FUNCTION fn_user_views()
+RETURNS TABLE (
+  instance_id UUID,
+  id UUID,
+  email VARCHAR,
+  roles TEXT,
+  created_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE
+)
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+  SELECT 
+    u.instance_id,
+    u.id,
+    u.email,
+    ur.roles,
+    u.created_at,
+    u.updated_at
+  FROM
+    auth.users u LEFT JOIN (
+      SELECT u.user_id, string_agg(r.name, ' || ') AS roles FROM user_app_roles u, app_roles r WHERE u.app_role_id = r.id GROUP BY u.user_id
+    ) ur ON u.id = ur.user_id;
+$$;
+
+CREATE VIEW user_views AS SELECT * FROM fn_user_views();
+
+
+
 INSERT INTO app_roles (name) VALUES ('admin');
+INSERT INTO app_roles (name) VALUES ('operator');
+INSERT INTO app_roles (name) VALUES ('user');
 
 INSERT INTO app_permissions (name) VALUES ('items.select');
 INSERT INTO app_permissions (name) VALUES ('items.update');
@@ -83,5 +119,10 @@ INSERT INTO app_permissions (name) VALUES ('item_categories.insert');
 INSERT INTO app_permissions (name) VALUES ('item_categories.delete');
 
 INSERT INTO app_role_permissions(app_role_id, app_permission_id) SELECT r.id as uid, p.id as pid FROM app_roles r, app_permissions p WHERE r.name = 'admin';
-
+INSERT INTO app_role_permissions(app_role_id, app_permission_id) SELECT r.id as uid, p.id as pid FROM app_roles r, app_permissions p WHERE r.name = 'operator' AND NOT(p.name LIKE '%.delete');
+INSERT INTO app_role_permissions(app_role_id, app_permission_id) SELECT r.id as uid, p.id as pid FROM app_roles r, app_permissions p WHERE r.name = 'user' AND p.name LIKE '%.select';
+ 
 INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'agus@senomas.com' AND r.name = 'admin';
+INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'scupid@gmail.com' AND r.name = 'operator';
+INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'scupid@gmail.com' AND r.name = 'user';
+INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'd3nmas3n0@gmail.com' AND r.name = 'user';
