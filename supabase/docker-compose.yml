@@ -154,7 +154,8 @@ services:
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ./volumes/db/data:/var/lib/postgresql/data
+      # - ./volumes/db/data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
       - ./volumes/db/init:/docker-entrypoint-initdb.d
 
   mail:
@@ -164,3 +165,7 @@ services:
       - '2500:2500' # SMTP
       - '9000:9000' # web interface
       - '1100:1100' # POP3
+
+volumes:
+  db-data:
+    driver: local

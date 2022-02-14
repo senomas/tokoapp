@@ -11,7 +11,9 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "supabase": "cd ../supabase && docker-compose up -d",
     "supabase-stop": "cd ../supabase && docker-compose down -v",
-    "flyway": "docker run --rm --network=supabase_default -v `pwd`/../sql:/flyway/sql -v `pwd`/../flyway.conf:/flyway/conf/flyway.conf flyway/flyway"
+    "flyway": "docker run --rm --network=supabase_default -v `pwd`/../sql:/flyway/sql -v `pwd`/../flyway.conf:/flyway/conf/flyway.conf flyway/flyway",
+    "predev": "npm run supabase && node init-user.js && npm run flyway migrate",
+    "postdev": "npm run supabase-stop"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
@@ -29,7 +31,7 @@
     "svelte-preprocess": "^4.9.8",
     "tailwindcss": "^3.0.18",
     "tslib": "^2.3.1",
-    "typescript": "^4.4.4",
+    "typescript": "^4.5.5",
     "vite": "^2.7.2"
   },
   "dependencies": {

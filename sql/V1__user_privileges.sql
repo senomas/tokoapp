@@ -123,6 +123,7 @@ INSERT INTO app_role_permissions(app_role_id, app_permission_id) SELECT r.id as 
 INSERT INTO app_role_permissions(app_role_id, app_permission_id) SELECT r.id as uid, p.id as pid FROM app_roles r, app_permissions p WHERE r.name = 'user' AND p.name LIKE '%.select';
  
 INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'agus@senomas.com' AND r.name = 'admin';
-INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'scupid@gmail.com' AND r.name = 'operator';
-INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'scupid@gmail.com' AND r.name = 'user';
-INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'd3nmas3n0@gmail.com' AND r.name = 'user';
+INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'admin@tokoapp.com' AND r.name = 'admin';
+INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'opr@tokoapp.com' AND r.name = 'operator';
+INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'user1@tokoapp.com' AND r.name = 'user';
+INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'user2@tokoapp.com' AND r.name = 'user';
