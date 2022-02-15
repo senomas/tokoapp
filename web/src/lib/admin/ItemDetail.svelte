@@ -13,7 +13,7 @@
 
   let categories = null;
   let validate = {};
-  let loading = false;
+  let loading = true;
   let visible;
 
   let item = {};
@@ -25,16 +25,14 @@
   async function fetchData(_, id) {
     loading = true;
     try {
-      if (!categories) {
-        let {data, error} = await supabase
-          .from('item_category_views')
-          .select('*');
-        if (error) throw error;
-        categories = data.map(v => ({
-          id: v.id,
-          name: v.full_name
-        }));
-      }
+      let {data, error} = await supabase
+        .from('item_category_views')
+        .select('*');
+      if (error) throw error;
+      categories = data.map(v => ({
+        id: v.id,
+        name: v.full_name
+      }));
       if (!id || id === '__NEW__') {
         item = {};
       } else {
@@ -156,7 +154,7 @@
   on:save={e => saveData(e)}
   on:delete={e => deleteData(e)}
 >
-  <div class="flex flex-wrap -mx-3 mb-6">
+  <div class="flex flex-wrap mb-6">
     {#if id && id !== '__NEW__'}
       <InputText
         id="id"

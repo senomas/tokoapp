@@ -1,5 +1,6 @@
 <script lang="ts">
   import {createEventDispatcher} from 'svelte';
+  import {fade} from 'svelte/transition';
   import Confirmation from './Confirmation.svelte';
 
   const dispatch = createEventDispatcher();
@@ -9,7 +10,7 @@
   export let id;
   export let top = null;
   export let name;
-  export let loading;
+  export let loading = true;
   export let navigate;
 
   let deleteConfirm;
@@ -27,11 +28,17 @@
 
 {#if visible}
   <div class="veil" />
-  <div {style}>
+  <div {style} in:fade={{duration: 200}} out:fade={{duration: 200}}>
     <div class="w-full bg-black text-white px-6 py-2">{title}</div>
     <div class="bg-white px-6 py-6 border border-gray-500">
-      <div class="w-full flex bg-white">
+      <div class="relative w-full flex bg-white">
         <slot />
+        {#if loading}
+          <div
+            class="w-full h-full absolute top-0 left-0 bg-white"
+            out:fade={{duration: 600}}
+          />
+        {/if}
       </div>
     </div>
     <div

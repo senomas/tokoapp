@@ -1,4 +1,6 @@
 <script>
+  import {onMount} from 'svelte';
+
   import {cl} from '../store';
 
   export let loading = false;
@@ -6,6 +8,12 @@
   export let label = id;
   export let model = {};
   export let validate = {};
+
+  let focus = false;
+
+  onMount(() => {
+    console.log({mount: {id, value: model[id]}});
+  });
 </script>
 
 <div class={cl(['w-full relative my-3', $$props.class])}>
@@ -15,12 +23,14 @@
     type="text"
     disabled={loading}
     bind:value={model[id]}
+    on:focus={() => (focus = true)}
+    on:blur={() => (focus = false)}
     placeholder={label}
   />
   <label
-    class="peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 
-    peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm
-    block text-gray-700 text-sm absolute left-0 -top-3.5 transition-all"
+    class="block text-gray-700 text-sm absolute left-0 {model[id] || focus
+      ? '-top-3.5'
+      : 'top-2'} transition-all"
     for={id}>{label}</label
   >
   {#if validate[id]}

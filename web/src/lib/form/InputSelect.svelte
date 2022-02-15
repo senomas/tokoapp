@@ -1,39 +1,82 @@
-<script>
-  import Filter from '../admin/Filter.svelte';
+<script type="ts">
+  import {onDestroy, onMount} from 'svelte';
+
   import {cl} from '../store';
 
   export let loading;
   export let id;
   export let label = id;
   export let model = {};
-  export let options;
+  export let options: any[];
   export let validate;
 
+  let value;
+
+  function getValue(id) {
+    return options ? options.filter(v => v.id === id)[0]?.name || '' : '';
+  }
+
+  function initValue(id, loading) {
+    if (!loading) {
+      value = getValue(id);
+    }
+  }
+
+  function select(opt, _) {
+    if (opt) {
+      value = opt.name;
+      model[id] = opt.id;
+    } else {
+      value = '';
+      model[id] = null;
+    }
+    focus = false;
+  }
+
   let focus = false;
+
+  function onFocus() {
+    focus = true;
+    value = '';
+  }
+
+  function onClick(e) {
+    if (e.target.id !== id && focus) {
+      focus = false;
+      value = getValue(model[id]);
+    }
+  }
+
+  onMount(() => {
+    window.addEventListener('click', onClick);
+  });
+
+  onDestroy(() => {
+    window.removeEventListener('click', onClick);
+  });
+
+  $: {
+    initValue(model[id], loading);
+  }
 </script>
 
 <div class={cl(['w-full relative my-3', $$props.class])}>
   <div class="relative">
-    <label
-      class="peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 
-    peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm
-    block text-gray-700 text-sm absolute left-0 -top-3.5 transition-all"
-      for={id}>{label}</label
-    >
-    <select
+    <input
       class="peer w-full h-10 border-b-2 border-gray-300 focus:outline-none focus:border-gray-500 placeholder-transparent"
       {id}
+      type="text"
       disabled={loading}
-      bind:value={model[id]}
-      required
+      bind:value
+      placeholder={label}
+      on:focus={onFocus}
+    />
+    <label
+      class="block text-gray-700 text-sm absolute left-0 {model[id] || focus
+        ? '-top-3.5'
+        : 'top-2'} transition-all"
+      for={id}>{label}</label
     >
-      <option value="" />
-      {#if options}
-        {#each options as opt}
-          <option value={opt.id}>{@html opt.name}</option>
-        {/each}
-      {/if}
-    </select>
     <div
       class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-gray-700"
     >
@@ -46,6 +89,32 @@
         /></svg
       >
     </div>
+    {#if focus}
+      <div
+        class="border border-gray-500 rounded bg-white absolute top-11 z-50 w-full"
+      >
+        <ul>
+          <li
+            class="hover:bg-gray-300"
+            on:click|stopPropagation={e => select(null, e)}
+          >
+            <span class="px-2" />
+          </li>
+          {#if options}
+            {#each options as opt}
+              {#if opt.name.toLowerCase().indexOf(value.toLowerCase()) >= 0}
+                <li
+                  class="hover:bg-gray-300"
+                  on:click|stopPropagation={e => select(opt, e)}
+                >
+                  <span class="px-2">{opt.name}</span>
+                </li>
+              {/if}
+            {/each}
+          {/if}
+        </ul>
+      </div>
+    {/if}
   </div>
   {#if validate[id]}
     <p class="text-red-500 text-xs italic">{validate[id]}</p>

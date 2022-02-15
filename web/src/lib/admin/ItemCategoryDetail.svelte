@@ -153,7 +153,7 @@
   on:save={saveData}
   on:delete={deleteData}
 >
-  <div class="flex flex-wrap -mx-3 mb-6">
+  <div class="flex flex-wrap mb-6">
     {#if id && id !== '__NEW__'}
       <InputText
         id="id"
