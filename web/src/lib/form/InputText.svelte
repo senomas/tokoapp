@@ -10,10 +10,6 @@
   export let validate = {};
 
   let focus = false;
-
-  onMount(() => {
-    console.log({mount: {id, value: model[id]}});
-  });
 </script>
 
 <div class={cl(['w-full relative my-3', $$props.class])}>

@@ -132,6 +132,7 @@
     param = parseURLQuery(loc.search);
     const filter = urlQueryFilter(param);
     filtered = filter && Object.entries(filter).length > 0;
+    console.log({list: {user, entity, param}});
     loadData(user, entity, param);
   }
 </script>

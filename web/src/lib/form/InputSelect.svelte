@@ -1,5 +1,6 @@
 <script type="ts">
   import {onDestroy, onMount} from 'svelte';
+  import {fade} from 'svelte/transition';
 
   import {cl} from '../store';
 
@@ -92,6 +93,8 @@
     {#if focus}
       <div
         class="border border-gray-500 rounded bg-white absolute top-11 z-50 w-full"
+        in:fade={{duration: 200}}
+        out:fade={{duration: 200}}
       >
         <ul>
           <li

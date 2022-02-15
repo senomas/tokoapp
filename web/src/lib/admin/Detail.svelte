@@ -28,9 +28,14 @@
 
 {#if visible}
   <div class="veil" />
-  <div {style} in:fade={{duration: 200}} out:fade={{duration: 200}}>
+  <div
+    class="border border-gray-500"
+    {style}
+    in:fade={{duration: 200}}
+    out:fade={{duration: 200}}
+  >
     <div class="w-full bg-black text-white px-6 py-2">{title}</div>
-    <div class="bg-white px-6 py-6 border border-gray-500">
+    <div class="bg-white px-6 py-6">
       <div class="relative w-full flex bg-white">
         <slot />
         {#if loading}

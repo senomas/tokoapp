@@ -26,8 +26,10 @@ export function parseURLQuery(query) {
     .slice(-1)[0]
     .split('&')
     .map(v => v.split('='))
-    .reduce((acc, v) => {
-      acc[v[0]] = v[1];
+    .reduce((acc, [k, v]) => {
+      if (k) {
+        acc[k] = v;
+      }
       return acc;
     }, {});
 }
