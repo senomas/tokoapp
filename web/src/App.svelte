@@ -1,6 +1,8 @@
 <script lang="ts">
+  import './app.css';
   import {Router, Route} from 'svelte-navigator';
   import {onDestroy} from 'svelte';
+
   import Header from './lib/Header.svelte';
   import Footer from './lib/Footer.svelte';
   import {User} from './lib/store';
@@ -13,7 +15,7 @@
 
   const unUser = User.subscribe(v => {
     user = v;
-    localStorage.setItem('user', JSON.stringify(v));
+    sessionStorage.setItem('user', JSON.stringify(v));
   });
   onDestroy(unUser);
 </script>
@@ -22,7 +24,7 @@
   <div>
     <Router>
       <div class="w-full flex-col">
-        <div class="bg-gray-200">
+        <div class="bg-gray-200 dark:bg-black dark:text-white">
           <Header {user} />
         </div>
         <div class="flex">
@@ -79,8 +81,4 @@
     top: 0;
     left: 0;
   }
-
-  @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
 </style>

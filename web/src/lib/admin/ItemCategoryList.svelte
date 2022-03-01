@@ -1,6 +1,6 @@
 <script lang="ts">
   import {useLocation} from 'svelte-navigator';
-  import {parseURLQuery, urlQueryFilter} from '../store';
+  import {parseURLQuery, urlQueryFilter} from '../util';
 
   import {supabase} from '../supabase';
   import ItemCategoryDetail from './ItemCategoryDetail.svelte';

@@ -1,6 +1,6 @@
 <script lang="ts">
   import {useLocation} from 'svelte-navigator';
-  import {parseURLQuery, urlQueryFilter} from '../store';
+  import {parseURLQuery, urlQueryFilter} from '../util';
 
   import {supabase} from '../supabase';
   import ItemDetail from './ItemDetail.svelte';
@@ -70,7 +70,6 @@
     let {data, count, error} = await select
       .order(orderField, {ascending: orderAsc})
       .range(rangeStart, rangeEnd);
-    console.log({data, count, error});
     return {data, count, error};
   }
 </script>

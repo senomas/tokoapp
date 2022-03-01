@@ -2,9 +2,16 @@ import {writable} from 'svelte/store';
 
 let user;
 try {
-  user = JSON.parse(localStorage.getItem('user') || 'NULL');
+  user = JSON.parse(sessionStorage.getItem('user') || 'NULL');
 } catch (err) {
   user = null;
+}
+
+let theme;
+try {
+  theme = JSON.parse(sessionStorage.getItem('theme') || '{}');
+} catch (err) {
+  theme = {};
 }
 
 export const User = (function () {
@@ -20,32 +27,10 @@ export const User = (function () {
   };
 })();
 
-export function parseURLQuery(query) {
-  return query
-    .split('?')
-    .slice(-1)[0]
-    .split('&')
-    .map(v => v.split('='))
-    .reduce((acc, [k, v]) => {
-      if (k) {
-        acc[k] = v;
-      }
-      return acc;
-    }, {});
-}
-
-export function urlQueryFilter(param) {
-  return Object.entries(param).reduce((acc, [k, v]) => {
-    if (k.startsWith('fi:')) {
-      acc[k.substring(3)] = v;
-    }
-    return acc;
-  }, {});
-}
-
-export function cl(value) {
-  if (Array.isArray(value)) {
-    return value.filter(v => !!v).join(' ');
-  }
-  return value;
-}
+export const Theme = (function () {
+  const {subscribe, set} = writable(theme);
+  return {
+    subscribe,
+    set
+  };
+})();

@@ -1,7 +1,7 @@
 <script>
   import {onMount} from 'svelte';
 
-  import {cl} from '../store';
+  import {cl} from '../util';
 
   export let loading = false;
   export let id;

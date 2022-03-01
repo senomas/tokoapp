@@ -36,11 +36,11 @@
   >
     <div class="w-full bg-black text-white px-6 py-2">{title}</div>
     <div class="bg-white px-6 py-6">
-      <div class="relative w-full flex bg-white">
+      <div class="relative w-full flex bg-white dark:bg-gray-500">
         <slot />
         {#if loading}
           <div
-            class="w-full h-full absolute top-0 left-0 bg-white"
+            class="w-full h-full absolute top-0 left-0 bg-white dark:bg-gray-500"
             out:fade={{duration: 600}}
           />
         {/if}
@@ -51,43 +51,36 @@
     >
       <div class="grow" />
       {#if loading}
+        <button type="submit" class="btn-primary" disabled>Save</button>
         <button
-          type="submit"
-          class="flex-shrink-0 bg-gray-500 hover:bg-gray-700 border-gray-500 hover:border-gray-700 text-sm border-2 text-white py-1 px-5 rounded"
-          disabled>Save</button
-        >
-        <button
-          class="flex-shrink-0 bg-gray-500 hover:bg-gray-700 border-gray-500 hover:border-gray-700 text-sm border-2 text-white py-1 px-5 rounded"
+          class="btn-primary"
           disabled={loading}
           on:click={e => dispatch('reset', e)}>Reset</button
         >
         {#if id && id !== '__NEW__'}
-          <button
-            class="flex-shrink-0 bg-red-500 hover:bg-red-200 border-red-200 hover:border-red-200 text-sm border-2 text-white py-1 px-5 rounded"
-            disabled>Delete</button
-          >
+          <button class="btn-primary" disabled>Delete</button>
         {/if}
         <div class="grow text-right">
           <button
-            class="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-2 text-white py-1 px-5 rounded"
+            class="btn-primary"
             on:click={() => navigate(null, {id: null})}>Close</button
           >
         </div>
       {:else}
         <button
           type="submit"
-          class="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-2 text-white py-1 px-5 rounded"
+          class="btn-primary"
           disabled={loading}
           on:click={e => dispatch('save', e)}>Save</button
         >
         <button
-          class="flex-shrink-0 bg-yellow-500 hover:bg-yellow-700 border-yellow-500 hover:border-yellow-700 text-sm border-2 text-white py-1 px-5 rounded"
+          class="btn-primary"
           disabled={loading}
           on:click={e => dispatch('reset', e)}>Reset</button
         >
         {#if id && id !== '__NEW__'}
           <button
-            class="flex-shrink-0 bg-red-500 hover:bg-red-700 border-red-500 hover:border-red-700 text-sm border-2 text-white py-1 px-5 rounded"
+            class="btn-primary"
             disabled={loading}
             on:click={e => deleteConfirm.show(e, () => dispatch('delete', e))}
             >Delete</button
@@ -95,7 +88,7 @@
         {/if}
         <div class="grow text-right">
           <button
-            class="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-2 text-white py-1 px-5 rounded"
+            class="btn-primary"
             on:click={() => navigate(null, {id: null, bottom: null})}
             >Close</button
           >

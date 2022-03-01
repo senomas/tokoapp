@@ -2,7 +2,7 @@
   import {onDestroy, onMount} from 'svelte';
   import {fade} from 'svelte/transition';
 
-  import {cl} from '../store';
+  import {cl} from '../util';
 
   export let loading;
   export let id;

@@ -17,7 +17,7 @@
 
 <td
   class={[
-    'py-2 pl-6 pr-3 text-xs text-white border border-gray-500 align-middle',
+    'py-2 pl-6 pr-3 text-xs border border-gray-500 align-middle',
     field.class || '',
     field.sortable ? 'cursor-pointer' : null
   ]

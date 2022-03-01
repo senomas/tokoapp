@@ -77,7 +77,7 @@
           on:click={() => navigate(p.link, p.param)}>{p.title}</span
         >
       {:else}
-        <span class="px-2 py-2 text-black">{p.title}</span>
+        <span class="px-2 py-2">{p.title}</span>
       {/if}
     {/each}
   </div>

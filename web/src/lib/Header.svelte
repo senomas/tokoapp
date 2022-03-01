@@ -1,10 +1,11 @@
 <script>
-  import {Link} from 'svelte-navigator';
   import {supabase} from './supabase';
-  import {User} from './store';
+  import {Theme, User} from './store';
+  import {onDestroy} from 'svelte';
 
   export let user;
 
+  let theme;
   let loading = false;
   let email = '';
   let password = '';
@@ -12,14 +13,6 @@
   const login = async () => {
     try {
       loading = true;
-      // const {
-      //   user: cuser,
-      //   session,
-      //   error,
-      // } = await supabase.auth.signUp({
-      //   email,
-      //   password,
-      // });
       const {
         user: cuser,
         session,
@@ -40,18 +33,34 @@
     try {
       loading = true;
       User.signout();
-      localStorage.clear();
+      sessionStorage.clear();
       location.reload();
     } finally {
       loading = false;
     }
   };
+
+  function toggleTheme() {
+    theme.light = !theme.light;
+    Theme.set(theme);
+  }
+
+  const unTheme = Theme.subscribe(v => {
+    theme = v;
+    sessionStorage.setItem('theme', JSON.stringify(v));
+    if (theme.light) {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+  });
+  onDestroy(unTheme);
 </script>
 
-<header class="text-gray-600 body-font">
+<header class="text-gray-600 body-font dark:text-gray-100">
   <div class="mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
     <a
-      class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0"
+      class="flex title-font font-medium items-center mb-4 md:mb-0"
       href="/"
       on:click={() => {
         window.scrollTo({
@@ -64,35 +73,27 @@
       <h2 class="ml-3 text-xl">ABC</h2>
     </a>
     <nav class="md:mx-auto flex flex-wrap items-center justify-center">
-      <Link class="mr-5" to="/admin/user">User</Link>
-      <Link class="mr-5" to="/admin/item-category">Item Category</Link>
-      <Link class="mr-5" to="/admin/item">Item</Link>
-      <Link class="mr-5" to="about">About</Link>
+      <span
+        class="mr-5 cursor-pointer"
+        href=""
+        on:click|preventDefault={toggleTheme}
+        >{theme.light ? 'Dark' : 'Light'}</span
+      >
+      <a class="mr-5" href="/admin/user">User</a>
+      <a class="mr-5" href="/admin/item-category">Item Category</a>
+      <a class="mr-5" href="/admin/item">Item</a>
+      <a class="mr-5" href="about">About</a>
       <div>
         {#if !user}
-          <input
-            type="text"
-            bind:value={email}
-            placeholder="email"
-            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-          />
-          <input
-            type="password"
-            bind:value={password}
-            placeholder="password"
-            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-          />
-          <button
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg w-full sm:w-auto px-5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            disabled={loading}
-            on:click={login}>{loading ? 'Loading' : 'LOGIN'}</button
+          <input type="text" bind:value={email} placeholder="email" />
+          <input type="password" bind:value={password} placeholder="password" />
+          <button class="btn-primary" disabled={loading} on:click={login}
+            >{loading ? 'Loading' : 'LOGIN'}</button
           >
         {:else}
           {user.email}
-          <button
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg w-full sm:w-auto px-5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            disabled={loading}
-            on:click={logout}>{loading ? 'Loading' : 'LOGOUT'}</button
+          <button class="btn-primary" disabled={loading} on:click={logout}
+            >{loading ? 'Loading' : 'LOGOUT'}</button
           >
         {/if}
       </div>
