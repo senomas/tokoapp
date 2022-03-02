@@ -77,10 +77,6 @@
     @apply stroke-white hover:stroke-blue-700;
   }
 
-  .demo {
-    @apply stroke-white;
-  }
-
   table.data-list tbody tr.odd {
     @apply bg-gray-50 whitespace-nowrap;
   }
@@ -95,6 +91,10 @@
 
   .data-list-paging {
     @apply w-full flex bg-gray-200;
+  }
+
+  .data-list-paging .link {
+    @apply cursor-pointer text-blue-700;
   }
 
   .data-list-paging .left {
