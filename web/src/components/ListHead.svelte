@@ -1,11 +1,8 @@
 <script lang="ts">
   import {goto} from '$app/navigation';
-  import Fa from 'svelte-fa';
-  import {
-    faSortAmountDownAlt,
-    faSortAmountUp,
-    faSearch
-  } from '@fortawesome/free-solid-svg-icons';
+  import SearchIcon from './icons/SearchIcon.svelte';
+  import ArrowUpIcon from './icons/ArrowUpIcon.svelte';
+  import ArrowDownIcon from './icons/ArrowDownIcon.svelte';
 
   export let value;
 
@@ -44,26 +41,24 @@
         on:click={() => changeSort(f)}
       >
         <div class="w-full flex space-x-1">
-          <div class="flex-none pt-0.5">
-            {#if value.order.field === f}
-              {#if value.order.asc}
-                <Fa icon={faSortAmountDownAlt} />
-              {:else}
-                <Fa icon={faSortAmountUp} />
+          <div class="grow flex">
+            <div class="grow" />
+            <div>{f}</div>
+            <div class="pt-1.5 w-5">
+              {#if value.order.field === f}
+                {#if value.order.asc}
+                  <ArrowUpIcon height={16} />
+                {:else}
+                  <ArrowDownIcon height={16} />
+                {/if}
               {/if}
-            {/if}
+            </div>
+            <div class="grow" />
           </div>
-          <div class="grow">{f}</div>
-          <div class="flex-none pt-0.5">
+          <div class="flex-none pt-1">
             {#if i === il}
-              <span on:click={e => search(e)}>
-                <Fa
-                  icon={faSearch}
-                  color={Object.entries(value.filter).filter(([_, v]) => !!v)
-                    .length > 0
-                    ? 'red'
-                    : null}
-                /></span
+              <span class="search" on:click={e => search(e)}
+                ><SearchIcon /></span
               >
             {/if}
           </div>

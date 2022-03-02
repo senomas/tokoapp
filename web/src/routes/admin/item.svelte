@@ -21,10 +21,14 @@
 
   let value: any = null;
   let loading = true;
+  let loadingAnimation = false;
 
   async function fetchItems(url) {
+    loading = true;
+    const loadingTimeout = setTimeout(() => {
+      loadingAnimation = true;
+    }, 200);
     try {
-      loading = true;
       value = await fetchData({
         title,
         searchParams: url.searchParams,
@@ -47,6 +51,10 @@
       console.log({fetchItems: {value}});
     } finally {
       loading = false;
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+      }
+      loadingAnimation = false;
     }
   }
 
@@ -55,7 +63,13 @@
   }
 </script>
 
-{#if value && !loading}
+{#if loading}
+  <div class="veil-transparent" />
+  {#if loadingAnimation}
+    LOADING
+  {/if}
+{/if}
+{#if value}
   <ListFilter {value}>
     <Input type="text" id="category" bind:value={value.filter} class="w-full" />
     <Input type="text" id="name" bind:value={value.filter} class="w-full" />
@@ -94,6 +108,4 @@
     </tbody>
   </table>
   <ListPaging {value} />
-{:else}
-  <h1>loading data</h1>
 {/if}

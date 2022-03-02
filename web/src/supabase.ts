@@ -133,7 +133,7 @@ export async function fetchData({
     if (error) throw error;
     result.item = data[0];
   }
-  // await new Promise(resolve => setTimeout(resolve, 3000));
+  // await new Promise(resolve => setTimeout(resolve, 1000));
   return result;
 }
 

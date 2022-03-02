@@ -73,6 +73,14 @@
     @apply text-center bg-black text-white dark:bg-gray-900 dark:text-gray-200;
   }
 
+  table.data-list thead .search svg {
+    @apply stroke-white hover:stroke-blue-700;
+  }
+
+  .demo {
+    @apply stroke-white;
+  }
+
   table.data-list tbody tr.odd {
     @apply bg-gray-50 whitespace-nowrap;
   }
