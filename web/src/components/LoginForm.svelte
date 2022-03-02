@@ -5,8 +5,7 @@
 
   import Input from './Input.svelte';
 
-  let email = '';
-  let password = '';
+  let value = {};
   let loading = false;
   let top = '50%';
   let left = '50%';
@@ -16,14 +15,7 @@
   async function login() {
     try {
       loading = true;
-      const {
-        user: cuser,
-        session,
-        error
-      } = await supabase.auth.signIn({
-        email,
-        password
-      });
+      const {user: cuser, session, error} = await supabase.auth.signIn(value);
       if (error) throw error;
       User.signin({...session, ...cuser});
     } catch (error) {
@@ -43,8 +35,8 @@
 >
   <div class="header">Login</div>
   <div class="body">
-    <Input type="text" id="email" bind:value={email} class="w-full" />
-    <Input type="password" id="password" bind:value={password} class="w-full" />
+    <Input type="text" id="email" bind:value class="w-full" />
+    <Input type="password" id="password" bind:value class="w-full" />
   </div>
   <div class="footer">
     <button class="btn-primary" disabled={loading} on:click={login}

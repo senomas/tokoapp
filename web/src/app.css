@@ -54,4 +54,24 @@
   .btn-cancel {
     @apply text-white bg-blue-700 rounded-lg w-full px-5 text-center hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto;
   }
+
+  table.data-list {
+    @apply w-full table-fixed border border-gray-300 dark:border-gray-700;
+  }
+
+  table.data-list thead {
+    @apply text-center bg-black text-white dark:bg-gray-900 dark:text-gray-200;
+  }
+
+  table.data-list tbody tr.odd {
+    @apply bg-gray-50 whitespace-nowrap;
+  }
+
+  table.data-list tbody tr.even {
+    @apply whitespace-nowrap;
+  }
+
+  table.data-list tbody td {
+    @apply px-6 py-1 border border-gray-300 dark:border-gray-500;
+  }
 }

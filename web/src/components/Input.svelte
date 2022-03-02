@@ -16,7 +16,7 @@
       {id}
       type="text"
       {disabled}
-      bind:value
+      bind:value={value[id]}
       on:focus={() => (focus = true)}
       on:blur={() => (focus = false)}
       placeholder={label}
@@ -27,7 +27,7 @@
       {id}
       type="password"
       {disabled}
-      bind:value
+      bind:value={value[id]}
       on:focus={() => (focus = true)}
       on:blur={() => (focus = false)}
       placeholder={label}
