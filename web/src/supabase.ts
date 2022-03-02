@@ -7,8 +7,11 @@ export const supabase = createClient(
 );
 
 interface FetchData {
+  title?: string;
   searchParams: URLSearchParams;
   from: string;
+  listFrom?: string;
+  detailFrom?: string;
   field: {[k: string]: any};
   filter: {
     [key: string]: (
@@ -20,8 +23,11 @@ interface FetchData {
 }
 
 export async function fetchData({
+  title,
   searchParams,
   from,
+  listFrom,
+  detailFrom,
   field,
   filter
 }: FetchData) {
@@ -37,11 +43,16 @@ export async function fetchData({
       field: searchParams.get('of'),
       asc: !searchParams.has('de')
     },
+    from,
+    title,
     showFilter: searchParams.has('f'),
-    field,
     filter: {} as any,
+    field,
     total: null as number,
     items: null as any[],
+    item: null as any,
+    top: parseInt(searchParams.get('top') || '0'),
+    id: searchParams.get('id'),
     createLink: null as (param: any) => string
   };
 
@@ -75,6 +86,12 @@ export async function fetchData({
         q.push([`f_${k}`, v]);
       });
     }
+    if (param.id) {
+      q.push(['id', param.id]);
+    }
+    if (param.top && param.top > 0) {
+      q.push(['top', param.top]);
+    }
     return `?${q
       .map(([k, v]) =>
         v
@@ -85,7 +102,7 @@ export async function fetchData({
   };
 
   const builder = supabase
-    .from(from)
+    .from(listFrom || from)
     .select(Object.keys(field).join(','), {count: 'exact'});
   searchParams.forEach((v, k) => {
     if (k.startsWith('f_')) {
@@ -107,6 +124,15 @@ export async function fetchData({
   result.total = count;
   result.paging.rangeStart = rangeStart + 1;
   result.paging.rangeEnd = Math.min(rangeEnd + 1, count);
+
+  if (result.id) {
+    const {data, error} = await supabase
+      .from(detailFrom || from)
+      .select('*')
+      .eq('id', result.id);
+    if (error) throw error;
+    result.item = data[0];
+  }
   // await new Promise(resolve => setTimeout(resolve, 3000));
   return result;
 }

@@ -1,41 +1,46 @@
 <script lang="ts">
   import {goto} from '$app/navigation';
-  import {createEventDispatcher} from 'svelte';
-  import {fade} from 'svelte/transition';
 
-  const dispatch = createEventDispatcher();
-
-  export let showFilter;
-  export let createLink;
+  export let value;
 
   let top = '50%';
   let left = '50%';
   let translate =
     '-ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);';
 
+  function filterApply() {
+    goto(
+      value.createLink({
+        showFilter: false,
+        filter: Object.entries(value.filter as {[k: string]: string}).reduce(
+          (acc, [k, v]) => {
+            if (v && !!v.trim()) {
+              acc[k] = v;
+            }
+            return acc;
+          },
+          {}
+        )
+      })
+    );
+  }
+
   function filterReset() {
-    const link = createLink({showFilter: false});
+    const link = value.createLink({showFilter: false, filter: {}});
     goto(link);
   }
 </script>
 
-{#if showFilter}
+{#if value.showFilter}
   <div class="veil" />
-  <div
-    style="top:{top}; left:{left}; {translate}"
-    class="form"
-    in:fade={{duration: 100}}
-    out:fade={{duration: 100}}
-  >
+  <div style="top:{top}; left:{left}; {translate}" class="form">
     <div class="header">Filter</div>
     <div class="body">
       <slot />
     </div>
     <div class="footer">
-      <button class="btn-primary" on:click={e => dispatch('apply', e)}
-        >Apply</button
-      >
-      <button class="btn-reset" on:click={filterReset}>Reset</button>
+      <button class="btn-primary" on:click={filterApply}>Apply</button>
+      <button class="btn-cancel" on:click={filterReset}>Reset</button>
     </div>
   </div>
 {/if}

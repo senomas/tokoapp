@@ -7,47 +7,46 @@
     faSearch
   } from '@fortawesome/free-solid-svg-icons';
 
-  export let field;
-  export let createLink;
-  export let paging;
-  export let order;
-  export let filter;
+  export let value;
 
-  const il = Object.keys(field).length - 1;
+  const il = Object.keys(value.field).length - 1;
 
-  function changeSort(field) {
-    if (field[field]?.sortable) {
-      if (order.field === field) {
-        order.asc = !order.asc;
+  function changeSort(f) {
+    if (value.field[f]?.sortable) {
+      if (value.order.field === f) {
+        value.order.asc = !value.order.asc;
       } else {
-        order.field = field;
-        order.asc = true;
+        value.order.field = f;
+        value.order.asc = true;
       }
-      paging.page = 1;
-      const link = createLink({order, paging});
+      value.paging.page = 1;
+      const link = value.createLink({order: value.order, paging: value.paging});
       goto(link);
     }
   }
 
   function search(_) {
-    const link = createLink({showFilter: true});
+    const link = value.createLink({showFilter: true});
     goto(link);
   }
 </script>
 
 <thead>
   <tr>
-    {#each Object.keys(field) as f, i}
+    {#each Object.keys(value.field) as f, i}
       <td
-        class={[field[f]?.class, field[f]?.sortable ? 'cursor-pointer' : null]
+        class={[
+          value.field[f]?.class,
+          value.field[f]?.sortable ? 'cursor-pointer' : null
+        ]
           .filter(v => !!v)
           .join(' ')}
         on:click={() => changeSort(f)}
       >
         <div class="w-full flex space-x-1">
           <div class="flex-none pt-0.5">
-            {#if order.field === f}
-              {#if order.asc}
+            {#if value.order.field === f}
+              {#if value.order.asc}
                 <Fa icon={faSortAmountDownAlt} />
               {:else}
                 <Fa icon={faSortAmountUp} />
@@ -60,8 +59,10 @@
               <span on:click={e => search(e)}>
                 <Fa
                   icon={faSearch}
-                  color={Object.keys(filter).length > 0 ? 'red' : null}
-                  scale={1.3}
+                  color={Object.entries(value.filter).filter(([_, v]) => !!v)
+                    .length > 0
+                    ? 'red'
+                    : null}
                 /></span
               >
             {/if}
