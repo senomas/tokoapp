@@ -29,41 +29,11 @@
 </script>
 
 <thead>
-  <tr>
-    {#each Object.keys(value.field) as f, i}
-      <td
-        class={[
-          value.field[f]?.class,
-          value.field[f]?.sortable ? 'cursor-pointer' : null
-        ]
-          .filter(v => !!v)
-          .join(' ')}
-        on:click={() => changeSort(f)}
-      >
-        <div class="w-full flex space-x-1">
-          <div class="grow flex">
-            <div class="grow" />
-            <div>{f}</div>
-            <div class="pt-1.5 w-5">
-              {#if value.order.field === f}
-                {#if value.order.asc}
-                  <ArrowUpIcon height={16} />
-                {:else}
-                  <ArrowDownIcon height={16} />
-                {/if}
-              {/if}
-            </div>
-            <div class="grow" />
-          </div>
-          <div class="flex-none pt-1">
-            {#if i === il}
-              <span class="search" on:click={e => search(e)}
-                ><SearchIcon /></span
-              >
-            {/if}
-          </div>
-        </div>
-      </td>
-    {/each}
-  </tr>
+  {#each value.items as item}
+    <tr>
+      {#each Object.keys(value.field) as f, i}
+        <td on:click={() => changeSort(f)}>{f}</td>
+      {/each}
+    </tr>
+  {/each}
 </thead>

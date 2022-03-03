@@ -65,24 +65,50 @@
     @apply text-white bg-blue-700 rounded-lg w-full px-5 text-center hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto;
   }
 
-  table.data-list {
-    @apply w-full table-fixed border border-gray-300 dark:border-gray-700;
+  @media (min-width: 640px) {
+    table.data-list {
+      display: inline-table !important;
+    }
+    table.data-list thead tr:not(:first-child) {
+      display: none;
+    }
   }
 
-  table.data-list thead {
-    @apply text-center bg-black text-white dark:bg-gray-900 dark:text-gray-200;
+  table.data-list {
+    empty-cells: display;
+    @apply w-full flex flex-row flex-nowrap sm:bg-white rounded-lg overflow-hidden sm:shadow-lg my-5;
+  }
+
+  table.data-list td:not(:last-child) {
+    border-bottom: 0;
+  }
+
+  table.data-list th:not(:last-child) {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  }
+
+  table.data-list thead tr {
+    @apply bg-teal-400 flex flex-col flex-nowrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0;
+  }
+
+  table.data-list thead td {
+    @apply px-6 py-1 border border-gray-300 dark:border-gray-500;
   }
 
   table.data-list thead .search svg {
     @apply stroke-white hover:stroke-blue-700;
   }
 
-  table.data-list tbody tr.odd {
-    @apply bg-gray-50 whitespace-nowrap;
+  table.data-list tbody {
+    @apply flex-1 sm:flex-none;
   }
 
-  table.data-list tbody tr.even {
-    @apply whitespace-nowrap;
+  table.data-list tbody tr:nth-child(odd) {
+    @apply bg-gray-50 whitespace-nowrap flex flex-col flex-nowrap sm:table-row mb-2 sm:mb-0;
+  }
+
+  table.data-list tbody tr:nth-child(even) {
+    @apply whitespace-nowrap flex flex-col flex-nowrap sm:table-row mb-2 sm:mb-0;
   }
 
   table.data-list tbody td {

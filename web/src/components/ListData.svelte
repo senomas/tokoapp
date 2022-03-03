@@ -2,7 +2,6 @@
   import {goto} from '$app/navigation';
   export let value;
   export let item;
-  export let line;
 
   function open(event, item) {
     const el = event.srcElement.parentElement;
@@ -16,8 +15,8 @@
   }
 </script>
 
-<tr class={line % 2 === 0 ? 'odd' : 'even'} on:click={e => open(e, item)}>
+<tr on:click={e => open(e, item)}>
   {#each Object.keys(value.field) as f}
-    <td>{item[f] || ''}</td>
+    <td>{@html item[f] || '&nbsp;'}</td>
   {/each}
 </tr>

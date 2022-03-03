@@ -35,47 +35,91 @@
   }
 </script>
 
-<div class="data-list-paging">
-  <div class="left">
-    {#if value.total > 0}
-      Showing {value.paging?.rangeStart} to {value.paging?.rangeEnd} of {value.total}
-      entries
-    {:else}
-      Showing 0 entries
-    {/if}
+<div class="relative">
+  <div class="absolute top-0 data-list-paging visible md:invisible">
+    <div class="left">
+      {#if value.total > 0}
+        {value.paging?.rangeStart} - {value.paging?.rangeEnd} of {value.total}
+      {:else}
+        No data
+      {/if}
+    </div>
+    <div class="right">
+      {#if value.total > 0}
+        <span
+          class="px-2 py-2 {value.paging.page > 1 ? 'link' : ''}"
+          on:click={goPage(1)}>&#x2759;&#x276E;</span
+        >
+        <span
+          class="px-2 py-2 {value.paging.page > 1 ? 'link' : ''}"
+          on:click={goPage(pmin - 1)}>&#x276E;&#x276E;</span
+        >
+        <span
+          class="px-2 py-2 {value.paging.page > 1 ? 'link' : ''}"
+          on:click={goPage(value.paging.page - 1)}>&#x276E;</span
+        >
+
+        <span class="px-2 py-2">{value.paging.page}</span>
+
+        <span
+          class="px-2 py-2 {value.paging.page < pageMax ? 'link' : ''}"
+          on:click={goPage(value.paging.page + 1)}>&#x276F;</span
+        >
+        <span
+          class="px-2 py-2 {value.paging.page < pageMax ? 'link' : ''}"
+          on:click={goPage(pmax + 1)}>&#x276F;&#x276F;</span
+        >
+        <span
+          class="px-2 py-2 {value.paging.page < pageMax ? 'link' : ''}"
+          on:click={goPage(pageMax)}>&#x276F;&#x2759;</span
+        >
+      {/if}
+    </div>
   </div>
-  <div class="right">
-    <span
-      class="px-2 py-2 {value.paging.page > 1 ? 'link' : ''}"
-      on:click={goPage(1)}>&#x2759;&#x276E;</span
-    >
-    <span
-      class="px-2 py-2 {value.paging.page > 1 ? 'link' : ''}"
-      on:click={goPage(pmin - 1)}>&#x276E;&#x276E;</span
-    >
-    <span
-      class="px-2 py-2 {value.paging.page > 1 ? 'link' : ''}"
-      on:click={goPage(value.paging.page - 1)}>&#x276E;</span
-    >
+  <div class="absolute top-0 data-list-paging invisible md:visible">
+    <div class="left">
+      {#if value.total > 0}
+        Showing {value.paging?.rangeStart} to {value.paging?.rangeEnd} of {value.total}
+        entries
+      {:else}
+        No data
+      {/if}
+    </div>
+    <div class="right">
+      {#if value.total > 0}
+        <span
+          class="px-2 py-2 {value.paging.page > 1 ? 'link' : ''}"
+          on:click={goPage(1)}>&#x2759;&#x276E;</span
+        >
+        <span
+          class="px-2 py-2 {value.paging.page > 1 ? 'link' : ''}"
+          on:click={goPage(pmin - 1)}>&#x276E;&#x276E;</span
+        >
+        <span
+          class="px-2 py-2 {value.paging.page > 1 ? 'link' : ''}"
+          on:click={goPage(value.paging.page - 1)}>&#x276E;</span
+        >
 
-    {#each pages as p}
-      <span
-        class="px-2 py-2 {value.paging.page !== p ? 'link' : ''}"
-        on:click={goPage(p)}>{p}</span
-      >
-    {/each}
+        {#each pages as p}
+          <span
+            class="px-2 py-2 {value.paging.page !== p ? 'link' : ''}"
+            on:click={goPage(p)}>{p}</span
+          >
+        {/each}
 
-    <span
-      class="px-2 py-2 {value.paging.page < pageMax ? 'link' : ''}"
-      on:click={goPage(value.paging.page + 1)}>&#x276F;</span
-    >
-    <span
-      class="px-2 py-2 {value.paging.page < pageMax ? 'link' : ''}"
-      on:click={goPage(pmax + 1)}>&#x276F;&#x276F;</span
-    >
-    <span
-      class="px-2 py-2 {value.paging.page < pageMax ? 'link' : ''}"
-      on:click={goPage(pageMax)}>&#x276F;&#x2759;</span
-    >
+        <span
+          class="px-2 py-2 {value.paging.page < pageMax ? 'link' : ''}"
+          on:click={goPage(value.paging.page + 1)}>&#x276F;</span
+        >
+        <span
+          class="px-2 py-2 {value.paging.page < pageMax ? 'link' : ''}"
+          on:click={goPage(pmax + 1)}>&#x276F;&#x276F;</span
+        >
+        <span
+          class="px-2 py-2 {value.paging.page < pageMax ? 'link' : ''}"
+          on:click={goPage(pageMax)}>&#x276F;&#x2759;</span
+        >
+      {/if}
+    </div>
   </div>
 </div>

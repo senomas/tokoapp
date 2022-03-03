@@ -12,6 +12,7 @@
 
   let focus = false;
   let listOpen = false;
+  let initValue = true;
   let selectValue;
   let selectValueLC;
 
@@ -35,12 +36,17 @@
     }
   }
 
-  onMount(() => {
-    selectValue =
-      type === 'select' && options
-        ? options.filter(({key}) => key === value[id])[0]?.value
-        : '';
-  });
+  $: {
+    if (options && type === 'select') {
+      if (initValue) {
+        selectValue =
+          type === 'select' && options
+            ? options.filter(({key}) => key === value[id])[0]?.value
+            : '';
+        initValue = false;
+      }
+    }
+  }
 
   $: {
     selectValueLC = selectValue?.toLowerCase();
