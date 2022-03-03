@@ -1,5 +1,6 @@
 <script lang="ts">
   import {page as pageStore} from '$app/stores';
+  import {goto} from '$app/navigation';
   import {fetchData, filter_ilike, supabase} from '../../supabase';
   import ListPaging from '../../components/ListPaging.svelte';
   import ListHead from '../../components/ListHead.svelte';
@@ -58,6 +59,24 @@
     }
   }
 
+  async function save(_) {
+    console.log({save: {item: value.item}});
+    const {error} = await supabase
+      .from(from)
+      .update(
+        {
+          category_id: value.item.category_id,
+          name: value.item.name,
+          description: value.item.description
+        },
+        {returning: 'minimal'}
+      )
+      .eq('id', value.item.id);
+    if (error) throw error;
+    const link = value.createLink({id: null, top: null});
+    goto(link);
+  }
+
   $: {
     fetchItems($pageStore.url);
   }
@@ -90,7 +109,7 @@
     />
   </ListFilter>
   {#if value.item}
-    <ListDetail {value}>
+    <ListDetail {value} on:save={save}>
       <Input
         type="select"
         id="category_id"
