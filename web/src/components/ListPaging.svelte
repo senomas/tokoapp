@@ -33,6 +33,11 @@
       }
     };
   }
+
+  function search() {
+    const link = value.createLink({showFilter: true});
+    goto(link);
+  }
 </script>
 
 <div class="relative">
@@ -86,6 +91,7 @@
       {/if}
     </div>
     <div class="right">
+      <span class="px-2 py-2 link" on:click={search}>&#x1F50E;&#xFE0E;</span>
       {#if value.total > 0}
         <span
           class="px-2 py-2 {value.paging.page > 1 ? 'link' : ''}"

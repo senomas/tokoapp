@@ -1,12 +1,9 @@
 <script lang="ts">
   import {goto} from '$app/navigation';
-  import SearchIcon from './icons/SearchIcon.svelte';
-  import ArrowUpIcon from './icons/ArrowUpIcon.svelte';
-  import ArrowDownIcon from './icons/ArrowDownIcon.svelte';
+  import CarretDownIcon from './icons/CarretDownIcon.svelte';
+  import CarretUpIcon from './icons/CarretUpIcon.svelte';
 
   export let value;
-
-  const il = Object.keys(value.field).length - 1;
 
   function changeSort(f) {
     if (value.field[f]?.sortable) {
@@ -21,18 +18,35 @@
       goto(link);
     }
   }
-
-  function search(_) {
-    const link = value.createLink({showFilter: true});
-    goto(link);
-  }
 </script>
 
 <thead>
-  {#each value.items as item}
+  {#each value.items as _}
     <tr>
-      {#each Object.keys(value.field) as f, i}
-        <td on:click={() => changeSort(f)}>{f}</td>
+      {#each Object.keys(value.field) as f}
+        <td on:click={() => changeSort(f)} class={value.field[f].class || ''}
+          ><div class="flex space-x-1">
+            <div>{f}</div>
+            {#if value.field[f].sortable}
+              <div class="relative">
+                <div class="absolute left-0">
+                  <CarretUpIcon
+                    class={value.order.field === f && !value.order.asc
+                      ? 'active'
+                      : 'inactive'}
+                  />
+                </div>
+                <div class="absolute left-0 top-2">
+                  <CarretDownIcon
+                    class={value.order.field === f && value.order.asc
+                      ? 'active'
+                      : 'inactive'}
+                  />
+                </div>
+              </div>
+            {/if}
+          </div></td
+        >
       {/each}
     </tr>
   {/each}

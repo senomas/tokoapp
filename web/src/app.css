@@ -74,6 +74,14 @@
     }
   }
 
+  table.data-list svg.inactive {
+    @apply fill-teal-200;
+  }
+
+  table.data-list svg.active {
+    @apply fill-white;
+  }
+
   table.data-list {
     empty-cells: display;
     @apply w-full flex flex-row flex-nowrap sm:bg-white rounded-lg overflow-hidden sm:shadow-lg my-5;
@@ -88,7 +96,7 @@
   }
 
   table.data-list thead tr {
-    @apply bg-teal-400 flex flex-col flex-nowrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0;
+    @apply bg-teal-400 text-white font-semibold uppercase flex flex-col flex-nowrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0;
   }
 
   table.data-list thead td {

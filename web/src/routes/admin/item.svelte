@@ -13,10 +13,10 @@
   const detailFrom = 'item_views';
   const listFrom = 'item_views';
   const field = {
-    id: {class: 'w-20', sortable: true},
-    category: {class: 'w-80', sortable: true},
-    name: {sortable: true},
-    description: {class: 'w-100'}
+    id: {class: 'sm:w-20', sortable: true},
+    category: {class: 'sm:w-80', sortable: true},
+    name: {class: 'sm:w-[40rem]', sortable: true},
+    description: {}
   };
 
   let value: any = null;
@@ -70,6 +70,15 @@
   {/if}
 {/if}
 {#if value}
+  <table class="data-list">
+    <ListHead {value} />
+    <tbody>
+      {#each value.items as item}
+        <ListData {value} {item} />
+      {/each}
+    </tbody>
+  </table>
+  <ListPaging {value} />
   <ListFilter {value}>
     <Input type="text" id="category" bind:value={value.filter} class="w-full" />
     <Input type="text" id="name" bind:value={value.filter} class="w-full" />
@@ -99,13 +108,4 @@
       />
     </ListDetail>
   {/if}
-  <table class="data-list">
-    <ListHead {value} />
-    <tbody>
-      {#each value.items as item, line}
-        <ListData {value} {item} {line} />
-      {/each}
-    </tbody>
-  </table>
-  <ListPaging {value} />
 {/if}
