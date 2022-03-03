@@ -1,9 +1,7 @@
 <script lang="ts">
-  import {onMount} from 'svelte';
-
   export let id;
   export let tagId = id;
-  export let label = tagId;
+  export let label = null;
   export let value;
   export let disabled = false;
   export let type = 'text';
@@ -53,7 +51,7 @@
   }
 </script>
 
-<div class="relative {$$props.class}">
+<div class="input relative {$$props.class}">
   {#if type === 'text'}
     <input
       class="peer mt-8"
@@ -91,14 +89,14 @@
     <h1>TYPE '{type}' NOT SUPPORTED</h1>
   {/if}
   <label
-    class="block absolute left-0 {!!value[id] || focus
-      ? 'top-[0.8rem]'
-      : 'top-[2rem]'} transition-all"
-    for={id}>{label}</label
+    class="color-input-label block absolute left-2 {!!value[id] || focus
+      ? 'top-[0.7rem]'
+      : 'top-[2.2rem]'} {label ? '' : 'fix-case'} transition-all"
+    for={id}>{label || tagId}</label
   >
   {#if type === 'select'}
     <div
-      class="pointer-events-none absolute top-7 inset-y-0 right-0 flex items-center text-gray-700"
+      class="pointer-events-none absolute top-8 inset-y-0 right-0 flex items-center text-gray-700"
     >
       <svg
         class="fill-current h-4 w-4"
@@ -111,7 +109,7 @@
     </div>
     {#if listOpen}
       <div
-        class="border border-gray-500 rounded bg-white absolute top-14 z-50 w-full max-h-[15rem] overflow-y-auto"
+        class="border border-gray-500 rounded bg-white absolute top-15 z-50 w-full max-h-[15rem] overflow-y-auto"
       >
         <ul>
           <li

@@ -13,7 +13,7 @@
   const detailFrom = 'item_views';
   const listFrom = 'item_views';
   const field = {
-    id: {class: 'sm:w-20', sortable: true},
+    id: {label: 'ID', class: 'sm:w-20', sortable: true},
     category: {class: 'sm:w-80', sortable: true},
     name: {class: 'sm:w-[40rem]', sortable: true},
     description: {}

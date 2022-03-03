@@ -33,36 +33,78 @@
     left: 0;
   }
 
+  .color-body {
+    @apply bg-white dark:bg-gray-500 text-gray-600;
+  }
+
+  .color-header {
+    @apply bg-teal-400 text-white font-semibold;
+  }
+
+  .color-primary {
+    @apply text-white bg-blue-700 dark:bg-blue-600;
+  }
+
+  .color-primary-hover {
+    @apply hover:bg-blue-800 focus:ring-blue-300 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
+  }
+
+  .color-cancel {
+    @apply text-white bg-blue-700 dark:bg-blue-600;
+  }
+
+  .color-cancel-hover {
+    @apply hover:bg-blue-800 focus:ring-blue-300 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
+  }
+
+  .color-input {
+    @apply bg-white border-gray-200 focus:bg-white focus:border-gray-500 text-black dark:bg-gray-700 dark:focus:bg-gray-600 dark:focus:border-gray-200 dark:text-white;
+  }
+
+  .color-input-label {
+    @apply text-gray-400;
+  }
+
+  .link {
+    @apply cursor-pointer hover:text-blue-700 text-white;
+  }
+
+  .link- {
+    @apply cursor-default text-teal-600;
+  }
+
   .form {
     @apply border border-gray-500 absolute;
   }
 
   .form .header {
-    @apply w-full bg-black text-white px-6 py-2;
+    @apply w-full color-header rounded-t-lg overflow-hidden shadow-lg px-6 py-2;
   }
 
   .form .body {
-    @apply relative w-full flex flex-wrap px-6 pb-6 bg-white dark:bg-gray-500;
+    @apply color-body relative w-full flex flex-wrap px-6 pb-6 text-sm;
   }
 
-  .form .body label {
-    @apply text-gray-600 text-sm;
-  }
+  /* appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline */
 
-  .form .body input {
-    @apply appearance-none placeholder-transparent block w-full bg-white border-b-2 border-gray-200 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-black dark:bg-gray-700 dark:focus:outline-none dark:focus:bg-gray-600 dark:focus:border-gray-200 dark:text-white;
+  input {
+    @apply color-input shadow appearance-none placeholder-transparent block w-full border rounded leading-tight py-1 px-2 focus:outline-none dark:focus:outline-none;
   }
 
   .form .footer {
-    @apply flex w-full bg-gray-500 justify-center font-bold space-x-2 text-white px-6 py-2;
+    @apply flex w-full color-header rounded-b-lg overflow-hidden shadow-lg justify-center font-bold space-x-2 px-6 py-2;
   }
 
   .btn-primary {
-    @apply text-white bg-blue-700 rounded-lg w-full px-5 text-center hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto;
+    @apply color-primary color-primary-hover rounded-lg w-full px-5 text-center focus:ring-4 sm:w-auto;
   }
 
   .btn-cancel {
-    @apply text-white bg-blue-700 rounded-lg w-full px-5 text-center hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto;
+    @apply color-cancel color-cancel-hover rounded-lg w-full px-5 text-center focus:ring-4 sm:w-auto;
+  }
+
+  .fix-case {
+    @apply capitalize;
   }
 
   @media (min-width: 640px) {
@@ -84,7 +126,7 @@
 
   table.data-list {
     empty-cells: display;
-    @apply w-full flex flex-row flex-nowrap sm:bg-white rounded-lg overflow-hidden sm:shadow-lg my-5;
+    @apply w-full flex flex-row flex-nowrap sm:rounded-lg overflow-hidden sm:shadow-lg;
   }
 
   table.data-list td:not(:last-child) {
@@ -96,7 +138,7 @@
   }
 
   table.data-list thead tr {
-    @apply bg-teal-400 text-white font-semibold uppercase flex flex-col flex-nowrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0;
+    @apply color-header flex flex-col flex-nowrap sm:table-row sm:rounded-l-lg sm:rounded-none mb-2 sm:mb-0;
   }
 
   table.data-list thead td {
@@ -124,18 +166,14 @@
   }
 
   .data-list-paging {
-    @apply w-full flex bg-gray-200;
+    @apply w-full flex color-header text-sm sm:rounded-b-lg overflow-hidden sm:shadow-lg px-2 py-2 space-x-2;
   }
 
-  .data-list-paging .link {
-    @apply cursor-pointer text-blue-700;
+  .data-list-paging .pagination {
+    @apply flex space-x-4;
   }
 
-  .data-list-paging .left {
-    @apply px-2 py-2 text-xs text-left;
-  }
-
-  .data-list-paging .right {
-    @apply grow px-2 py-2 text-xs text-right font-bold;
+  .data-list-paging .pagination svg {
+    @apply fill-white pt-1;
   }
 }
