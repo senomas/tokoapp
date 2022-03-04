@@ -48,8 +48,11 @@
   }
 
   function search() {
-    const link = value.createLink({showFilter: true});
-    goto(link);
+    goto(value.createLink({showFilter: true}));
+  }
+
+  function createNew() {
+    goto(value.createLink({new: true}));
   }
 </script>
 
@@ -62,36 +65,50 @@
         No data
       {/if}
     </div>
-    <div>
-      <span class="link" on:click={search}>&#x1F50E;&#xFE0E;</span>
+    <div class="grow" />
+    <div class="pagination">
+      <div class="link" on:click={search}><FilterIcon /></div>
+      <div class="link" on:click={createNew}>+</div>
       {#if value.total > 0}
-        <span
+        <div
           class={value.paging.page > 1 ? 'link' : 'link-'}
-          on:click={goPage(1)}>&#x2759;&#x276E;</span
+          on:click={goPage(1)}
         >
-        <span
+          &#x2759;&#x276E;
+        </div>
+        <div
           class={value.paging.page > 1 ? 'link' : 'link-'}
-          on:click={goPage(pmin - 1)}>&#x276E;&#x276E;</span
+          on:click={goPage(pmin - 1)}
         >
-        <span
+          &#x276E;&#x276E;
+        </div>
+        <div
           class={value.paging.page > 1 ? 'link' : 'link-'}
-          on:click={goPage(value.paging.page - 1)}>&#x276E;</span
+          on:click={goPage(value.paging.page - 1)}
         >
+          &#x276E;
+        </div>
 
-        <span class="link-">{value.paging.page}</span>
+        <div class="link-">{value.paging.page}</div>
 
-        <span
+        <div
           class={value.paging.page < pageMax ? 'link' : 'link-'}
-          on:click={goPage(value.paging.page + 1)}>&#x276F;</span
+          on:click={goPage(value.paging.page + 1)}
         >
-        <span
+          &#x276F;
+        </div>
+        <div
           class={value.paging.page < pageMax ? 'link' : 'link-'}
-          on:click={goPage(pmax + 1)}>&#x276F;&#x276F;</span
+          on:click={goPage(pmax + 1)}
         >
-        <span
+          &#x276F;&#x276F;
+        </div>
+        <div
           class={value.paging.page < pageMax ? 'link' : 'link-'}
-          on:click={goPage(pageMax)}>&#x276F;&#x2759;</span
+          on:click={goPage(pageMax)}
         >
+          &#x276F;&#x2759;
+        </div>
       {/if}
     </div>
   </div>
@@ -107,6 +124,7 @@
     <div class="grow" />
     <div class="pagination">
       <div class="link" on:click={search}><FilterIcon /></div>
+      <div class="link" on:click={createNew}>+</div>
       {#if value.total > 0}
         <div
           class={value.paging.page > 1 ? 'link' : 'link-'}

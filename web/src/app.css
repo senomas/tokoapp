@@ -34,31 +34,47 @@
   }
 
   .color-body {
-    @apply bg-white dark:bg-gray-500 text-gray-600;
+    @apply bg-blue-100 dark:bg-gray-500 text-gray-600;
+  }
+
+  .color-body2 {
+    @apply bg-blue-200 dark:bg-gray-500 text-gray-600;
+  }
+
+  .color-border {
+    @apply border-gray-300 dark:border-gray-500;
   }
 
   .color-header {
-    @apply bg-teal-400 text-white font-semibold;
+    @apply bg-blue-800 text-white fill-white font-semibold;
   }
 
   .color-primary {
-    @apply text-white bg-blue-700 dark:bg-blue-600;
+    @apply text-blue-900 bg-blue-300 dark:bg-blue-600;
   }
 
   .color-primary-hover {
-    @apply hover:bg-blue-800 focus:ring-blue-300 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
+    @apply hover:bg-blue-400 focus:ring-blue-100 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
   }
 
   .color-cancel {
-    @apply text-white bg-blue-700 dark:bg-blue-600;
+    @apply text-blue-900 bg-blue-300 dark:bg-blue-600;
   }
 
   .color-cancel-hover {
-    @apply hover:bg-blue-800 focus:ring-blue-300 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
+    @apply hover:bg-blue-400 focus:ring-blue-100 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
   }
 
   .color-input {
-    @apply bg-white border-gray-200 focus:bg-white focus:border-gray-500 text-black dark:bg-gray-700 dark:focus:bg-gray-600 dark:focus:border-gray-200 dark:text-white;
+    @apply bg-blue-200 border-gray-200 focus:bg-blue-50 focus:border-gray-500 text-black dark:bg-gray-700 dark:focus:bg-gray-600 dark:focus:border-gray-200 dark:text-white;
+  }
+
+  .color-input-focus {
+    @apply bg-blue-50 border-blue-500 dark:bg-gray-600 dark:border-gray-200;
+  }
+
+  .color-input-hover {
+    @apply hover:bg-blue-200;
   }
 
   .color-input-label {
@@ -74,7 +90,7 @@
   }
 
   .form {
-    @apply border border-gray-500 absolute;
+    @apply absolute;
   }
 
   .form .header {
@@ -84,8 +100,6 @@
   .form .body {
     @apply color-body relative w-full flex flex-wrap px-6 pb-6 text-sm;
   }
-
-  /* appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline */
 
   input {
     @apply color-input shadow appearance-none placeholder-transparent block w-full border rounded leading-tight py-1 px-2 focus:outline-none dark:focus:outline-none;
@@ -142,7 +156,7 @@
   }
 
   table.data-list thead td {
-    @apply px-6 py-1 border border-gray-300 dark:border-gray-500;
+    @apply px-6 py-1 border color-border;
   }
 
   table.data-list thead .search svg {
@@ -154,7 +168,7 @@
   }
 
   table.data-list tbody tr:nth-child(odd) {
-    @apply bg-gray-50 whitespace-nowrap flex flex-col flex-nowrap sm:table-row mb-2 sm:mb-0;
+    @apply color-body2 whitespace-nowrap flex flex-col flex-nowrap sm:table-row mb-2 sm:mb-0;
   }
 
   table.data-list tbody tr:nth-child(even) {
@@ -162,7 +176,7 @@
   }
 
   table.data-list tbody td {
-    @apply px-6 py-1 border border-gray-300 dark:border-gray-500;
+    @apply px-6 py-1 border color-border;
   }
 
   .data-list-paging {
@@ -174,6 +188,6 @@
   }
 
   .data-list-paging .pagination svg {
-    @apply fill-white pt-1;
+    @apply pt-1;
   }
 }

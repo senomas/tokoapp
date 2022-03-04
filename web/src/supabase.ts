@@ -6,12 +6,21 @@ export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY as string
 );
 
-interface FetchData {
+export interface FetchData {
   title?: string;
   searchParams: URLSearchParams;
-  from: string;
-  listFrom?: string;
-  detailFrom?: string;
+  table: string;
+  listView?: string;
+  detailView?: string;
+  detailData: {
+    [k: string]: {
+      table: string;
+      columns: string;
+      orderColumn?: string;
+      ascending?: boolean;
+      map?: (data: any[]) => any[];
+    };
+  };
   field: {[k: string]: any};
   filter: {
     [key: string]: (
@@ -22,38 +31,62 @@ interface FetchData {
   };
 }
 
+export interface FetchDataResult {
+  paging: any;
+  order: {
+    field: string;
+    asc: boolean;
+  };
+  table: string;
+  title: string;
+  showFilter: boolean;
+  filter: {[k: string]: string};
+  field: {[k: string]: any};
+  total: number;
+  items: any[];
+  item: any;
+  itemData: {[k: string]: any[]};
+  top: number;
+  id: string;
+  newItem: boolean;
+  createLink: (param: any) => string;
+}
+
 export async function fetchData({
   title,
   searchParams,
-  from,
-  listFrom,
-  detailFrom,
+  table,
+  listView,
+  detailView,
+  detailData,
   field,
   filter
-}: FetchData) {
-  const result = {
+}: FetchData): Promise<FetchDataResult> {
+  const result: FetchDataResult = {
     paging: {
       page: parseInt(searchParams.get('p') || '1'),
       pageSize: parseInt(searchParams.get('s') || '10'),
       pagingSize: parseInt(searchParams.get('ps') || '10'),
-      rangeStart: null as number,
-      rangeEnd: null as number
+      rangeStart: null,
+      rangeEnd: null
     },
     order: {
       field: searchParams.get('of'),
       asc: !searchParams.has('de')
     },
-    from,
+    table,
     title,
     showFilter: searchParams.has('f'),
+    newItem: searchParams.has('new'),
     filter: {} as any,
     field,
-    total: null as number,
-    items: null as any[],
-    item: null as any,
+    total: null,
+    items: null,
+    item: null,
+    itemData: null,
     top: parseInt(searchParams.get('top') || '0'),
     id: searchParams.get('id'),
-    createLink: null as (param: any) => string
+    createLink: null
   };
 
   result.createLink = (p: any) => {
@@ -102,7 +135,7 @@ export async function fetchData({
   };
 
   const builder = supabase
-    .from(listFrom || from)
+    .from(listView || table)
     .select(Object.keys(field).join(','), {count: 'exact'});
   searchParams.forEach((v, k) => {
     if (k.startsWith('f_')) {
@@ -126,12 +159,37 @@ export async function fetchData({
   result.paging.rangeEnd = Math.min(rangeEnd + 1, count);
 
   if (result.id) {
-    const {data, error} = await supabase
-      .from(detailFrom || from)
-      .select('*')
-      .eq('id', result.id);
-    if (error) throw error;
-    result.item = data[0];
+    const details = [];
+    details.push(
+      supabase
+        .from(detailView || table)
+        .select('*')
+        .eq('id', result.id)
+    );
+    const ddk = [];
+    if (detailData) {
+      Object.entries(detailData).forEach(([k, v], i) => {
+        ddk.push({k, v, i});
+        const q = supabase.from(v.table).select(v.columns);
+        if (v.orderColumn) {
+          q.order(v.columns, {ascending: v.ascending || false});
+        }
+        details.push(q);
+      });
+    }
+    const dres = await Promise.all(details);
+    for (const d of dres) {
+      if (d.error) throw d;
+    }
+    result.item = dres[0].data[0];
+    result.itemData = {};
+    for (const dk of ddk) {
+      if (dk.v.map) {
+        result.itemData[dk.k] = dk.v.map(dres[dk.i + 1].data);
+      } else {
+        result.itemData[dk.k] = dres[dk.i + 1].data;
+      }
+    }
   }
   // await new Promise(resolve => setTimeout(resolve, 1000));
   return result;

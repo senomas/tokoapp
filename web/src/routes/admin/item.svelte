@@ -1,7 +1,12 @@
 <script lang="ts">
   import {page as pageStore} from '$app/stores';
   import {goto} from '$app/navigation';
-  import {fetchData, filter_ilike, supabase} from '../../supabase';
+  import {
+    fetchData,
+    filter_ilike,
+    supabase,
+    type FetchDataResult
+  } from '../../supabase';
   import ListPaging from '../../components/ListPaging.svelte';
   import ListHead from '../../components/ListHead.svelte';
   import ListFilter from '../../components/ListFilter.svelte';
@@ -10,9 +15,9 @@
   import ListDetail from '../../components/ListDetail.svelte';
 
   const title = 'Item';
-  const from = 'items';
-  const detailFrom = 'item_views';
-  const listFrom = 'item_views';
+  const table = 'items';
+  const detailView = 'item_views';
+  const listView = 'item_views';
   const field = {
     id: {label: 'ID', class: 'sm:w-20', sortable: true},
     category: {class: 'sm:w-80', sortable: true},
@@ -20,7 +25,7 @@
     description: {}
   };
 
-  let value: any = null;
+  let value: FetchDataResult = null;
   let loading = true;
   let loadingAnimation = false;
 
@@ -33,9 +38,21 @@
       value = await fetchData({
         title,
         searchParams: url.searchParams,
-        from,
-        listFrom,
-        detailFrom,
+        table,
+        listView,
+        detailView,
+        detailData: {
+          categories: {
+            table: 'item_category_views',
+            columns: 'id, full_name',
+            orderColumn: 'full_name',
+            map: data => {
+              return data
+                ? data.map(v => ({key: v.id, value: v.full_name}))
+                : data;
+            }
+          }
+        },
         field,
         filter: {
           category: filter_ilike,
@@ -43,12 +60,6 @@
           description: filter_ilike
         }
       });
-      const {data, error} = await supabase
-        .from('item_category_views')
-        .select('id, full_name')
-        .order('full_name');
-      if (error) throw error;
-      value.categories = data.map(v => ({key: v.id, value: v.full_name}));
       console.log({fetchItems: {value}});
     } finally {
       loading = false;
@@ -62,7 +73,7 @@
   async function save(_) {
     console.log({save: {item: value.item}});
     const {error} = await supabase
-      .from(from)
+      .from(table)
       .update(
         {
           category_id: value.item.category_id,
@@ -115,7 +126,7 @@
         id="category_id"
         tagId="category"
         bind:value={value.item}
-        options={value.categories}
+        options={value.itemData.categories}
         class="w-full"
       />
       <Input type="text" id="name" bind:value={value.item} class="w-full" />
