@@ -7,10 +7,6 @@
 
   let value = {};
   let loading = false;
-  let top = '50%';
-  let left = '50%';
-  let translate =
-    '-ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);';
 
   async function login() {
     try {
@@ -26,21 +22,19 @@
   }
 </script>
 
-<div class="veil-full" />
-<div
-  style="top:{top}; left:{left}; {translate}"
-  class="form"
-  in:fade={{duration: 100}}
-  out:fade={{duration: 100}}
->
-  <div class="header">Login</div>
-  <div class="body">
-    <Input type="text" id="email" bind:value class="w-full" />
-    <Input type="password" id="password" bind:value class="w-full" />
-  </div>
-  <div class="footer">
-    <button class="btn-primary" disabled={loading} on:click={login}
-      >{loading ? 'Loading' : 'LOGIN'}</button
-    >
+<div class="veil grid sm:content-center border-0">
+  <div class="text-white border-0 w-full flex justify-center">
+    <div class="text-white border-0 w-full sm:w-[600px] form">
+      <div class="header">Login</div>
+      <div class="body">
+        <Input type="text" id="email" bind:value class="w-full" />
+        <Input type="password" id="password" bind:value class="w-full" />
+      </div>
+      <div class="footer">
+        <button class="btn-primary" disabled={loading} on:click={login}
+          >login</button
+        >
+      </div>
+    </div>
   </div>
 </div>

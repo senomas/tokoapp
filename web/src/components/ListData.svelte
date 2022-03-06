@@ -1,6 +1,7 @@
 <script lang="ts">
   import {goto} from '$app/navigation';
-  export let value;
+  import type {FetchDataResult} from 'src/supabase';
+  export let value: FetchDataResult;
   export let item;
 
   function open(event, item) {
@@ -16,7 +17,7 @@
 </script>
 
 <tr on:click={e => open(e, item)}>
-  {#each Object.keys(value.field) as f}
-    <td>{@html item[f] || '&nbsp;'}</td>
+  {#each Object.entries(value.field) as [f, field]}
+    <td class={field.dataClass || ''}>{@html item[f] || '&nbsp;'}</td>
   {/each}
 </tr>

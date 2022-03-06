@@ -20,9 +20,12 @@
   const listView = 'item_views';
   const field = {
     id: {label: 'ID', class: 'sm:w-20', sortable: true},
-    category: {class: 'sm:w-80', sortable: true},
-    name: {class: 'sm:w-[40rem]', sortable: true},
-    description: {}
+    category: {class: 'sm:w-60 lg:w-80', sortable: true},
+    name: {class: 'sm:w-80 lg:w-[20rem]', sortable: true},
+    description: {
+      class: 'hidden lg:table-cell',
+      dataClass: 'hidden lg:table-cell'
+    }
   };
 
   let value: FetchDataResult = null;
