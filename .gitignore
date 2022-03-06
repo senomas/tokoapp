@@ -39,3 +39,4 @@ flyway.conf
 # typescript
 *.tsbuildinfo
 workspace.code-workspace
+supabase/.htpasswd
