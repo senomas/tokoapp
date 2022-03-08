@@ -4,8 +4,10 @@ services:
   nginx:
     image: nginx
     ports:
-      - 8000:8000
+      - 8080:8000
     environment:
+      LETSENCRYPT_HOST: tokoapp-sb.senomas.com
+      LETSENCRYPT_EMAIL: agus@senomas.com
       VIRTUAL_HOST: tokoapp-sb.senomas.com
       VIRTUAL_PORT: 8000
     volumes:
