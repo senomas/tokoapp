@@ -12,7 +12,7 @@
     "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
     "supabase": "cd ../supabase && docker-compose up -d",
     "supabase-stop": "cd ../supabase && docker-compose down -v",
-    "flyway": "docker run --rm --network=tokoapp_default -v `pwd`/../sql:/flyway/sql -v `pwd`/../flyway.conf:/flyway/conf/flyway.conf flyway/flyway",
+    "flyway": "docker run --rm --network=tokoapp_default -v `pwd`/../sql:/flyway/sql -v `pwd`/../flyway.conf:/flyway/conf/flyway.conf flyway/flyway:8.5.2",
     "init-data": "npm run flyway -- -target=2 migrate && node init-user.js && npm run flyway migrate",
     "predev": "npm run supabase && npm run init-data && npm run flyway migrate",
     "postdev": "npm run supabase-stop"
@@ -39,6 +39,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@supabase/supabase-js": "^1.30.7"
+    "@supabase/supabase-js": "^1.30.7",
+    "js-yaml": "^4.1.0"
   }
 }

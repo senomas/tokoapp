@@ -1,8 +1,48 @@
 <script lang="ts">
+  import {page as pageStore} from '$app/stores';
   import {User} from '../store';
+  import {slide} from 'svelte/transition';
+  import {goto as _goto} from '$app/navigation';
+
+  let pathnames;
+  $: {
+    pathnames = [
+      '/',
+      ...$pageStore.url.pathname
+        .split('/')
+        .filter(v => v && v.length > 0)
+        .reduce((acc, label, i, arr) => {
+          acc.push(`/${arr.slice(0, i + 1).join('/')}`);
+          return acc;
+        }, [])
+    ];
+  }
+
+  export let visible: any = {};
+  export let labels: any = {
+    '/': 'home',
+    '/admin': 'Admin',
+    '/admin/item': 'Items',
+    '/admin/user': 'User',
+    '/sales': 'Sales',
+    '/sales/report': 'Report'
+  };
+  let timer: any = {};
+
+  let children: any = Object.keys(labels).reduce((acc, k) => {
+    const kl = k.length;
+    acc[k] = Object.keys(labels).filter(
+      k2 =>
+        k2.startsWith(k) &&
+        k2.length > kl &&
+        k2.substring(kl + 1).indexOf('/') < 0
+    );
+    return acc;
+  }, {});
+
+  console.log({children});
 
   let loading = false;
-
   async function logout() {
     try {
       loading = true;
@@ -13,9 +53,122 @@
       loading = false;
     }
   }
+
+  function goto(href, opts = {}) {
+    return () => {
+      console.log({goto: {href, opts}});
+      _goto(href, opts);
+    };
+  }
+
+  function mouseover(id) {
+    return e => {
+      if (e.type === 'mouseenter') {
+        if (timer[id]) {
+          clearTimeout(timer[id]);
+          timer[id] = null;
+        }
+        if (!visible[id]) {
+          visible[id] = true;
+        }
+      } else if (e.type === 'mouseleave') {
+        if (timer[id]) {
+          clearTimeout(timer[id]);
+          timer[id] = null;
+        }
+        timer[id] = setTimeout(() => {
+          visible[id] = false;
+        }, 200);
+      }
+    };
+  }
 </script>
 
-<div class="W-full flex space-x-3">
-  <span>HEADER</span>
-  <span class="cursor-pointer" on:click={logout}>logout</span>
-</div>
+<ul class="w-full flex space-x-2 justify-between py-1">
+  <li>
+    <ul class="flex space-x-2">
+      {#each pathnames as p, pi}
+        {#if pi > 0}
+          <li>&#x276F;</li>
+        {/if}
+        <li class="relative">
+          <div
+            on:mouseenter={mouseover(p)}
+            on:mouseleave={mouseover(p)}
+            on:click={goto(p)}
+            class="cursor-pointer"
+          >
+            {#if labels[p] === 'home'}
+              <div class="block h-6 w-6 overflow-hidden">
+                <svg
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  viewBox="0 0 600 600"
+                >
+                  <path
+                    d="M299.8,577.9c-42,0-84,0-126,0c-13,0-25.5-2.6-37-9c-24.2-13.4-37.9-33.8-40.8-61.4c-0.3-3.3-0.4-6.7-0.4-10 c0-35.1,0-70.2,0-105.2c0-3.7,0-3.7-3.7-3.7c-37.6-0.4-71.7-29.7-77.4-66.8c-4.3-27.8,3.2-51.9,23.2-72 c67.7-67.8,135.5-135.5,203.2-203.3c13.9-13.9,30.3-22.2,49.8-24c26.3-2.4,49.1,5.1,68,24.1c46.6,46.8,93.4,93.5,140.2,140.2 c20.5,20.4,41,40.8,61.4,61.2c6.9,6.9,12.9,14.4,17.3,23.1c14.9,29.5,10.6,64.8-11.2,89.7c-15.6,17.9-35.5,27.2-59.3,27.7 c-2.7,0.1-3.1,1-3.1,3.4c0.1,37,0.2,74,0,111c-0.2,35.6-27.9,67.8-63,73.7c-5.4,0.9-10.9,1.3-16.4,1.3 C383.1,577.9,341.4,577.9,299.8,577.9z M347.2,458.3c0-8.6-0.1-17.2,0-25.7c0.1-10.9-3.9-20.2-11.5-27.6 c-14.9-14.5-32.8-17.9-52.2-11.9c-19.1,5.9-30.9,21.7-31.1,40.5c-0.1,16.4-0.1,32.8,0,49.2c0.1,11,3.8,20.6,11.5,28.5 c16,16.5,42.8,19.8,62.6,7.6c13.6-8.4,21.1-20.4,20.8-36.8C347.1,474.1,347.2,466.2,347.2,458.3z"
+                  />
+                </svg>
+              </div>
+            {:else}
+              {@html labels[p] || p.split('/').slice(-1)[0]}
+            {/if}
+          </div>
+          {#if children[p].length > 0}
+            {#key visible[p]}
+              <ul
+                class="{visible[p]
+                  ? ''
+                  : 'hidden'} absolute z-50 top-5 left-0 bg-white w-48 py-1 mt-2 px-1 rounded-lg shadow-xl"
+                on:mouseenter={mouseover(p)}
+                on:mouseleave={mouseover(p)}
+                in:slide
+              >
+                {#each children[p] as cp}
+                  <li
+                    class="block px-4 py-1 rounded-md hover:bg-indigo-100 cursor-pointer"
+                    on:click={goto(cp)}
+                  >
+                    {@html labels[cp] || cp.split('/').slice(-1)[0]}
+                  </li>
+                {/each}
+              </ul>
+            {/key}
+          {/if}
+        </li>
+      {/each}
+    </ul>
+  </li>
+  <li class="relative">
+    <button
+      on:mouseenter={mouseover('account')}
+      on:mouseleave={mouseover('account')}
+      class="block h-6 w-6 rounded-full overflow-hidden border-2 border-gray-500"
+      ><img
+        class="h-full w-full object-cover"
+        alt="avatar"
+        src="/avatar.svg"
+      /></button
+    >
+    {#key visible.account}
+      <ul
+        class="{visible.account
+          ? ''
+          : 'hidden'} absolute top-8 right-0 bg-white w-48 py-1 mt-2 px-1 rounded-lg shadow-xl"
+        on:mouseenter={mouseover('account')}
+        on:mouseleave={mouseover('account')}
+        in:slide
+      >
+        <li class="block px-4 py-1 rounded-md hover:bg-indigo-100">Account</li>
+        <li class="block px-4 py-1 rounded-md hover:bg-indigo-100">Support</li>
+        <li
+          class="block px-4 py-1 rounded-md hover:bg-indigo-100"
+          on:click={logout}
+        >
+          Sign out
+        </li>
+      </ul>
+    {/key}
+  </li>
+</ul>

@@ -31,7 +31,6 @@
 </script>
 
 {#if user}
-  <Header />
   <slot />
 {:else if user === null}
   <LoginForm />

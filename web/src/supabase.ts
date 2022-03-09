@@ -15,10 +15,9 @@ export interface FetchData {
   detailData: {
     [k: string]: {
       table: string;
-      columns: string;
+      columns: string[];
       orderColumn?: string;
       ascending?: boolean;
-      map?: (data: any[]) => any[];
     };
   };
   field: {[k: string]: any};
@@ -170,9 +169,9 @@ export async function fetchData({
     if (detailData) {
       Object.entries(detailData).forEach(([k, v], i) => {
         ddk.push({k, v, i});
-        const q = supabase.from(v.table).select(v.columns);
+        const q = supabase.from(v.table).select(v.columns.join(', '));
         if (v.orderColumn) {
-          q.order(v.columns, {ascending: v.ascending || false});
+          q.order(v.orderColumn, {ascending: v.ascending || false});
         }
         details.push(q);
       });
@@ -184,11 +183,12 @@ export async function fetchData({
     result.item = dres[0].data[0];
     result.itemData = {};
     for (const dk of ddk) {
-      if (dk.v.map) {
-        result.itemData[dk.k] = dk.v.map(dres[dk.i + 1].data);
-      } else {
-        result.itemData[dk.k] = dres[dk.i + 1].data;
-      }
+      const kkey = dk.v.columns[0];
+      const kvalue = dk.v.columns[1];
+      result.itemData[dk.k] = dres[dk.i + 1].data.map(v => ({
+        key: v[kkey],
+        value: v[kvalue]
+      }));
     }
   }
   // await new Promise(resolve => setTimeout(resolve, 1000));
