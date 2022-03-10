@@ -1,6 +1,6 @@
 <script lang="ts">
   import {goto} from '$app/navigation';
-  import FilterIcon from './icons/FilterIcon.svelte';
+  import FilterIcon from '../icons/FilterIcon.svelte';
 
   export let value: {
     field?: {[k: string]: any};

@@ -2,8 +2,7 @@
   import {User} from '../store';
   import {onDestroy, onMount} from 'svelte';
   import '../app.css';
-  import LoginForm from '../components/LoginForm.svelte';
-  import Header from '../components/Header.svelte';
+  import LoginForm from '../components/lib/LoginForm.svelte';
   import {supabase} from '../supabase';
 
   let user: any = undefined;

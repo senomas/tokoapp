@@ -1,6 +1,6 @@
 <script lang="ts">
   import {goto} from '$app/navigation';
-  import type {FetchDataResult} from 'src/supabase';
+  import type {FetchDataResult} from '../../supabase';
   import {createEventDispatcher} from 'svelte';
   import Input from './Input.svelte';
 

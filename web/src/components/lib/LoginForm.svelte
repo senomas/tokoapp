@@ -1,6 +1,6 @@
 <script lang="ts">
-  import {User} from '../store';
-  import {supabase} from '../supabase';
+  import {User} from '../../store';
+  import {supabase} from '../../supabase';
 
   import Input from './Input.svelte';
 

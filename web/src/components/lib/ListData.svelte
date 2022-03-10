@@ -1,6 +1,6 @@
 <script lang="ts">
   import {goto} from '$app/navigation';
-  import type {FetchDataResult} from 'src/supabase';
+  import type {FetchDataResult} from '../../supabase';
   export let value: FetchDataResult;
   export let item;
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import {goto} from '$app/navigation';
-  import CarretDownIcon from './icons/CarretDownIcon.svelte';
-  import CarretUpIcon from './icons/CarretUpIcon.svelte';
+  import CarretDownIcon from '../icons/CarretDownIcon.svelte';
+  import CarretUpIcon from '../icons/CarretUpIcon.svelte';
 
   export let value: {
     field?: {[k: string]: any};

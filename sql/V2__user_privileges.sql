@@ -192,7 +192,7 @@ AS $$
     u.updated_at
   FROM
     auth.users u LEFT JOIN (
-      SELECT u.user_id, string_agg(r.name, ' || ') AS roles FROM user_app_roles u, app_roles r WHERE u.app_role_id = r.id GROUP BY u.user_id
+      SELECT u.user_id, array_agg(r.name) AS roles FROM user_app_roles u, app_roles r WHERE u.app_role_id = r.id GROUP BY u.user_id
     ) ur ON u.id = ur.user_id;
 $$;
 

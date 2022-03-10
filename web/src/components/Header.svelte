@@ -11,7 +11,7 @@
       ...$pageStore.url.pathname
         .split('/')
         .filter(v => v && v.length > 0)
-        .reduce((acc, label, i, arr) => {
+        .reduce((acc, _, i, arr) => {
           acc.push(`/${arr.slice(0, i + 1).join('/')}`);
           return acc;
         }, [])
@@ -20,7 +20,7 @@
 
   export let visible: any = {};
   export let labels: any = {
-    '/': 'home',
+    '/': 'Menu',
     '/admin': 'Admin',
     '/admin/item': 'Items',
     '/admin/user': 'User',
@@ -96,7 +96,7 @@
             on:mouseenter={mouseover(p)}
             on:mouseleave={mouseover(p)}
             on:click={goto(p)}
-            class="cursor-pointer"
+            class="cursor-pointer font-bold"
           >
             {#if labels[p] === 'home'}
               <div class="block h-6 w-6 overflow-hidden">

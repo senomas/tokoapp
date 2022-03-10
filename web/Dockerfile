@@ -9,12 +9,12 @@ RUN npm install
 
 ADD .eslintrc.cjs /app/
 ADD tsconfig.json /app/
-ADD .env /app/
+ADD .env.docker /app/.env
 ADD svelte.config.js /app/
 ADD tailwind.config.cjs /app/
+ADD postcss.config.cjs /app/
 ADD static /app/static
 ADD src /app/src
-ADD data /app/data
 
 RUN npm run build
 

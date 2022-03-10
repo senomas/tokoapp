@@ -7,12 +7,11 @@
     supabase,
     type FetchDataResult
   } from '../supabase';
-  import ListPaging from './ListPaging.svelte';
-  import ListHead from './ListHead.svelte';
-  import ListFilter from './ListFilter.svelte';
-  import Input from './Input.svelte';
-  import ListData from './ListData.svelte';
-  import ListDetail from './ListDetail.svelte';
+  import ListPaging from './lib/ListPaging.svelte';
+  import ListHead from './lib/ListHead.svelte';
+  import ListFilter from './lib/ListFilter.svelte';
+  import ListData from './lib/ListData.svelte';
+  import ListDetail from './lib/ListDetail.svelte';
 
   export let title;
   export let table;
