@@ -1,5 +1,4 @@
 <script lang="ts">
-  import {fade} from 'svelte/transition';
   import {User} from '../store';
   import {supabase} from '../supabase';
 

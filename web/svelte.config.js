@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-node';
 import preprocess from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -9,15 +9,7 @@ const config = {
     })
   ],
   kit: {
-    adapter: adapter({
-      pages: 'build',
-      assets: 'build',
-      fallback: null,
-      precompress: false
-    }),
-    prerender: {
-      enabled: true
-    }
+    adapter: adapter({out: 'build'})
     /*
 		If you need to serve your file from a sub directory
 		paths: {

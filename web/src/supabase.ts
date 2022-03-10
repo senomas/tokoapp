@@ -37,6 +37,8 @@ export interface FetchDataResult {
     asc: boolean;
   };
   table: string;
+  listView?: string;
+  detailView?: string;
   title: string;
   showFilter: boolean;
   filter: {[k: string]: string};
@@ -74,6 +76,8 @@ export async function fetchData({
       asc: !searchParams.has('de')
     },
     table,
+    detailView,
+    listView,
     title,
     showFilter: searchParams.has('f'),
     newItem: searchParams.has('new'),

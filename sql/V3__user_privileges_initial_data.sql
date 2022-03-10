@@ -43,3 +43,6 @@ INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid
 INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'opr@tokoapp.com' AND r.name = 'operator';
 INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'user1@tokoapp.com' AND r.name = 'user';
 INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'user2@tokoapp.com' AND r.name = 'user';
+
+INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'multi@tokoapp.com' AND r.name = 'admin';
+INSERT INTO user_app_roles(user_id, app_role_id) SELECT u.id as uid, r.id as rid FROM auth.users u, app_roles r WHERE u.email = 'multi@tokoapp.com' AND r.name = 'operator';

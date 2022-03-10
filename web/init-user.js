@@ -36,10 +36,6 @@ async function createUser({email, password}) {
 
 (async () => {
   await createUser({
-    email: 'agus@senomas.com',
-    password: 'dodol123'
-  });
-  await createUser({
     email: 'admin@tokoapp.com',
     password: 'dodol123'
   });
@@ -53,6 +49,10 @@ async function createUser({email, password}) {
   });
   await createUser({
     email: 'user2@tokoapp.com',
+    password: 'dodol123'
+  });
+  await createUser({
+    email: 'multi@tokoapp.com',
     password: 'dodol123'
   });
 })()
