@@ -16,6 +16,10 @@ services:
     depends_on:
       - studio
 
+  web:
+    build: ../web
+    ports:
+      - 8030:3000
   studio:
     container_name: supabase-studio
     image: supabase/studio:latest
