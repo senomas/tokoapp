@@ -8,14 +8,7 @@
   $: {
     (async () => {
       let data;
-      let config;
-      const pathname = $pageStore.url.pathname;
-      if (pathname.endsWith('/')) {
-        config = pathname + 'index.yaml';
-      } else {
-        config = pathname + '.yaml';
-      }
-      data = await loadConfig(config);
+      data = await loadConfig($pageStore.url.pathname);
       console.log(JSON.stringify(data, undefined, 2));
       const component = (await import(`../components/${data.__type}.svelte`))
         .default;

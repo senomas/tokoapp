@@ -159,9 +159,9 @@
     {/each}
   </ul>
 </nav>
-<div class="relative z-0 left:0 sm:left-[3.5rem] sm:w-[calc(100%-3.5rem)]">
+<div class="relative left:0 sm:left-[3.5rem] sm:w-[calc(100%-3.5rem)]">
   <header
-    class="w-full flex items-center bg-gray-700 text-white text-2xl font-bold p-4 select-none"
+    class="z-0 w-full flex items-center bg-gray-700 text-white text-2xl font-bold p-4 select-none"
   >
     <button
       class="p-2 focus:outline-none focus:bg-inherit hover:bg-indigo-800 rounded-md sm:hidden"

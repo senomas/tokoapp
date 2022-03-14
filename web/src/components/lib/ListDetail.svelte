@@ -15,7 +15,7 @@
 
 <div class="veil grid sm:content-center border-0">
   <div class="text-white border-0 w-full flex justify-center">
-    <div class="text-white border-0 w-full sm:w-[600px] form">
+    <div class="border-0 w-full sm:w-[600px] form">
       <div class="header">{value.title || value.table}</div>
       <div class="body">
         {#each Object.entries(value.field) as f}

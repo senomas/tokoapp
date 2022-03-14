@@ -88,14 +88,20 @@ async function loadIncludes(v: any) {
   return v;
 }
 
-export async function loadConfig(file: string) {
+export async function loadConfig(config: string) {
+  let file;
+  if (config.endsWith('/')) {
+    file = config + 'index.yaml';
+  } else {
+    file = config + '.yaml';
+  }
   let data;
   let res = await fetch(file, {headers: {Accept: 'text/yaml'}});
   if (res.status === 200 && res.headers.get('content-type') === 'text/yaml') {
     const text = await res.text();
     data = load(text);
-  } else if (!file.endsWith('.yaml')) {
-    file = file + '/index.yaml';
+  } else if (!config.endsWith('.yaml')) {
+    file = config + '/index.yaml';
     res = await fetch(file, {headers: {Accept: 'text/yaml'}});
     if (res.status === 200 && res.headers.get('content-type') === 'text/yaml') {
       const text = await res.text();
