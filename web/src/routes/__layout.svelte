@@ -4,6 +4,7 @@
   import '../app.css';
   import LoginForm from '../components/lib/LoginForm.svelte';
   import {supabase} from '../supabase';
+  import Sidebar from '../components/lib/Sidebar.svelte';
 
   let user: any = undefined;
 
@@ -30,7 +31,9 @@
 </script>
 
 {#if user}
-  <slot />
+  <Sidebar>
+    <slot />
+  </Sidebar>
 {:else if user === null}
   <LoginForm />
 {/if}

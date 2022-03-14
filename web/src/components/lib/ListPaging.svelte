@@ -56,7 +56,7 @@
   }
 </script>
 
-<div class="relative">
+<div class="relative h-9">
   <div class="absolute top-0 data-list-paging visible md:invisible">
     <div>
       {#if value.total > 0}

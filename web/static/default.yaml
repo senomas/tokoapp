@@ -1,0 +1,7 @@
+labels:
+  '/': Home
+  '/admin': Admin
+  '/admin/item': Items
+  '/admin/user': User
+  '/sales': Sales
+  '/sales/report': Report

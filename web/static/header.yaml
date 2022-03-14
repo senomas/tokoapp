@@ -1,0 +1,17 @@
+menu:
+  label: Home
+  submenu:
+    admin:
+      label: Admin
+      submenu:
+        user:
+          label: User
+        item:
+          label: Item
+    sales:
+      label: Sales
+      submenu:
+        monthly:
+          label: Monthly
+        yearly:
+          label: Yearly

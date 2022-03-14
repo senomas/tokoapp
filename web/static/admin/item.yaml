@@ -1,6 +1,5 @@
 __type: Blocks
 contents:
-  - __type: Header
   - __type: List
     title: Item
     table: items
