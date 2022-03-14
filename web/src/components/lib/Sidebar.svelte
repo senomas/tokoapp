@@ -54,11 +54,12 @@
     }
   }
 
-  function goto(href, opts = {}) {
+  function goto(href, opts = null, current = null) {
     return () => {
-      console.log({goto: {href, opts}});
-      visible = {};
-      _goto(href, opts);
+      if (href !== current) {
+        console.log({goto: {href, opts}});
+        _goto(href, opts || {});
+      }
     };
   }
 
@@ -90,6 +91,18 @@
     };
   }
 
+  function show(id) {
+    return () => {
+      visible[id] = true;
+    };
+  }
+
+  function hide(id) {
+    return () => {
+      visible[id] = false;
+    };
+  }
+
   onMount(async () => {
     for (const menu of menus) {
       if (menu.icon) {
@@ -106,11 +119,13 @@
   class="absolute z-10 select-none bg-indigo-900 text-white h-full min-h-screen {visible.sidebar
     ? 'w-64'
     : 'hidden sm:block sm:w-14'}"
+  on:mouseenter={mouseover('sidebar')}
+  on:mouseleave={mouseover('sidebar')}
 >
   <ul class="h-full">
     <li
       class="flex h-[4.5rem] justify-between items-center px-4 space-x-2 hover:bg-indigo-800"
-      on:click={toggle('sidebar')}
+      on:click={show('sidebar')}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -127,27 +142,29 @@
           ? ''
           : 'hidden'}">Sidebar</span
       >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6 {visible.sidebar ? '' : 'hidden'}"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M15 19l-7-7 7-7"
-        />
-      </svg>
+      <span on:click|stopPropagation={hide('sidebar')}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 {visible.sidebar ? '' : 'hidden'}"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </span>
     </li>
     {#each menus as menu}
       <li
-        class="flex px-4 py-2 space-x-2 {url === menu.link
-          ? 'bg-indigo-300 hover:bg-indigo-300'
-          : 'hover:bg-indigo-800'}"
-        on:click={goto(menu.link)}
+        class="relative flex px-4 py-2 space-x-2 {url === menu.link
+          ? 'bg-blue-100 hover:bg-blue-100 text-black rounded-l-xl'
+          : 'hover:bg-indigo-800 cursor-pointer'}"
+        on:click={goto(menu.link, null, url)}
       >
         {#if menu.iconComponent}
           <svelte:component this={menu.iconComponent} />
@@ -193,7 +210,10 @@
           <span>&#x276F;</span>
         {/if}
         <span class="relative">
-          <div on:click={goto(p)} class="cursor-pointer font-bold">
+          <div
+            on:click={goto(p, null, url)}
+            class="{p !== url ? 'cursor-pointer' : ''} font-bold"
+          >
             {@html labels[p] || p.split('/').slice(-1)[0]}
           </div>
         </span>
