@@ -182,9 +182,14 @@
       </svg></button
     >
     <div class="w-full flex items-center space-x-2 py-1">
-      <span on:click={goto('/')} class="cursor-pointer font-bold">TokoAPP</span>
+      <span
+        on:click={goto('/')}
+        class="cursor-pointer font-bold hidden sm:block">TokoApp</span
+      >
       {#each pathnames as p, pi}
-        {#if pi > 0}
+        {#if pi === 1}
+          <span class="hidden sm:block">&#x276F;</span>
+        {:else if pi > 0}
           <span>&#x276F;</span>
         {/if}
         <span class="relative">
