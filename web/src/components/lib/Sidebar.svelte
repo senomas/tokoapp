@@ -93,7 +93,9 @@
   onMount(async () => {
     for (const menu of menus) {
       if (menu.icon) {
-        menu.iconComponent = (await import(`${menu.icon}.svelte`)).default;
+        menu.iconComponent = (
+          await import(/* @vite-ignore */ `${menu.icon}.svelte`)
+        ).default;
       }
     }
     menus = menus;
