@@ -5,12 +5,6 @@ contents:
     table: user_views
     listView: user_views
     field:
-      id:
-        label: ID
-        class: sm:w-60
-        sortable: true
-        detail: none
-        filter: none
       email:
         class: sm:w-60 lg:w-80
         sortable: true
