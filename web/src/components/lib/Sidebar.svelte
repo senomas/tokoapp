@@ -57,7 +57,7 @@
   function goto(href, opts = null, current = null) {
     return () => {
       if (href !== current) {
-        console.log({goto: {href, opts}});
+        visible = {};
         _goto(href, opts || {});
       }
     };
@@ -116,36 +116,22 @@
 </script>
 
 <nav
-  class="absolute z-10 select-none bg-indigo-900 text-white h-full min-h-screen {visible.sidebar
+  class="absolute z-10 select-none bg-indigo-900 text-white h-full min-h-screen transition-all {visible.sidebar
     ? 'w-64'
     : 'hidden sm:block sm:w-14'}"
   on:mouseenter={mouseover('sidebar')}
   on:mouseleave={mouseover('sidebar')}
 >
   <ul class="h-full">
-    <li
-      class="flex h-[4.5rem] justify-between items-center px-4 space-x-2 hover:bg-indigo-800"
-      on:click={show('sidebar')}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6 {visible.sidebar ? 'hidden' : ''}"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
+    {#if visible.sidebar}
+      <li
+        class="flex h-[4.5rem] items-center justify-between px-4 space-x-2 hover:bg-indigo-800"
+        on:click|preventDefault={hide('sidebar')}
       >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-      </svg>
-      <span
-        class="font-bold text-2xl sm:text-3xl p-4 {visible.sidebar
-          ? ''
-          : 'hidden'}">Sidebar</span
-      >
-      <span on:click|stopPropagation={hide('sidebar')}>
+        <span class="font-bold text-2xl sm:text-3xl p-4">Sidebar</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6 {visible.sidebar ? '' : 'hidden'}"
+          class="h-6 w-6"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -157,8 +143,28 @@
             d="M15 19l-7-7 7-7"
           />
         </svg>
-      </span>
-    </li>
+      </li>
+    {:else}
+      <li
+        class="flex h-[4.5rem] items-center px-4 space-x-2 hover:bg-indigo-800"
+        on:click|preventDefault={show('sidebar')}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </li>
+    {/if}
     {#each menus as menu}
       <li
         class="relative flex px-4 py-2 space-x-2 {url === menu.link
@@ -171,7 +177,9 @@
         {:else}
           <DocumentIcon />
         {/if}
-        <span class={visible.sidebar ? '' : 'hidden'}>{menu.label}</span>
+        {#if visible.sidebar}
+          <span class="absolute left-10">{menu.label}</span>
+        {/if}
       </li>
     {/each}
   </ul>
@@ -182,7 +190,7 @@
   >
     <button
       class="p-2 focus:outline-none focus:bg-inherit hover:bg-indigo-800 rounded-md sm:hidden"
-      on:click={toggle('sidebar')}
+      on:click={show('sidebar')}
       ><svg
         xmlns="http://www.w3.org/2000/svg"
         class="h-6 w-6"
