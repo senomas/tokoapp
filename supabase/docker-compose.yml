@@ -180,6 +180,25 @@ services:
       - '9000:9000' # web interface
       - '1100:1100' # POP3
 
+  code-server:
+    image: lscr.io/linuxserver/code-server
+    container_name: code-server
+    environment:
+      - LETSENCRYPT_HOST=tokoapp-sb.senomas.com
+      - LETSENCRYPT_EMAIL=agus@senomas.com
+      - VIRTUAL_HOST=tokoapp-code.senomas.com
+      - VIRTUAL_PORT=8443
+      - PUID=${CODE_PUID}
+      - PGID=${CODE_PGID}
+      - TZ=Asia/Jakarta
+      - HASHED_PASSWORD=${CODE_PASSWORD}
+      - SUDO_PASSWORD_HASH=${CODE_SUDO_PASSWORD}
+      - PROXY_DOMAIN=tokoapp-code.senomas.com
+      - DEFAULT_WORKSPACE=/config/workspace
+    volumes:
+      - ./code-server:/config
+      - ..:/config/workspace
+
 volumes:
   db-data:
     driver: local
