@@ -3,8 +3,22 @@ version: "3.8"
 services:
   nginx:
     image: nginx
-    ports:
-      - 8080:8000
+    environment:
+      LETSENCRYPT_HOST: tokoapp.senomas.com
+      LETSENCRYPT_EMAIL: agus@senomas.com
+      VIRTUAL_HOST: tokoapp.senomas.com
+      VIRTUAL_PORT: 8000
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./.htpasswd:/etc/nginx/.htpasswd
+    depends_on:
+      - studio
+    networks:
+      - default
+      - docknet
+
+  nginx-studio:
+    image: nginx
     environment:
       LETSENCRYPT_HOST: tokoapp-sb.senomas.com
       LETSENCRYPT_EMAIL: agus@senomas.com
@@ -15,11 +29,15 @@ services:
       - ./.htpasswd:/etc/nginx/.htpasswd
     depends_on:
       - studio
+    networks:
+      - default
+      - docknet
 
   web:
     build: ../web
     ports:
       - 8030:3000
+
   studio:
     container_name: supabase-studio
     image: supabase/studio:latest
@@ -184,7 +202,7 @@ services:
     image: lscr.io/linuxserver/code-server
     container_name: code-server
     environment:
-      - LETSENCRYPT_HOST=tokoapp-sb.senomas.com
+      - LETSENCRYPT_HOST=tokoapp-code.senomas.com
       - LETSENCRYPT_EMAIL=agus@senomas.com
       - VIRTUAL_HOST=tokoapp-code.senomas.com
       - VIRTUAL_PORT=8443
@@ -198,9 +216,16 @@ services:
     volumes:
       - ./code-server:/config
       - ..:/config/workspace
+    networks:
+      - default
+      - docknet
 
 volumes:
   db-data:
     driver: local
   storage-data:
     driver: local
+
+networks:
+  docknet:
+    external: true
