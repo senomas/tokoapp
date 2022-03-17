@@ -15,7 +15,7 @@ services:
       - studio
     networks:
       - default
-      - docknet
+      # - docknet
 
   nginx-studio:
     image: nginx
@@ -31,7 +31,7 @@ services:
       - studio
     networks:
       - default
-      - docknet
+      # - docknet
 
   web:
     build: ../web
@@ -199,8 +199,12 @@ services:
       - '1100:1100' # POP3
 
   code-server:
-    build: code-server
+    build:
+      context: code-server
+      args:
+        - PASSWORD=${CODE_PASSWORD_PLAIN}
     container_name: code-server
+    privileged: true
     environment:
       - LETSENCRYPT_HOST=tokoapp-code.senomas.com
       - LETSENCRYPT_EMAIL=agus@senomas.com
@@ -214,11 +218,14 @@ services:
       - PROXY_DOMAIN=tokoapp-code.senomas.com
       - DEFAULT_WORKSPACE=/config/workspace
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - ./code-server:/config
       - ..:/config/workspace
+    ports:
+      - '8060:8443'
     networks:
       - default
-      - docknet
+      # - docknet
 
 volumes:
   db-data:
@@ -226,6 +233,6 @@ volumes:
   storage-data:
     driver: local
 
-networks:
-  docknet:
-    external: true
+# networks:
+#   docknet:
+#     external: true
