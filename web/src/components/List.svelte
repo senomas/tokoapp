@@ -15,6 +15,7 @@
 
   export let title;
   export let table;
+  export let key;
   export let detailView = table;
   export let detailData: any = {};
   export let listView = table;
@@ -34,6 +35,7 @@
         title,
         searchParams: url.searchParams,
         table,
+        key,
         listView,
         detailView,
         detailData,

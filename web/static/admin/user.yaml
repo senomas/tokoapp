@@ -3,6 +3,7 @@ contents:
   - __type: List
     title: User
     table: user_views
+    key: email
     listView: user_views
     field:
       email:

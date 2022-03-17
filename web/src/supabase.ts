@@ -12,6 +12,7 @@ export interface FetchData {
   table: string;
   listView?: string;
   detailView?: string;
+  key?: string;
   detailData: {
     [k: string]: {
       table: string;
@@ -39,6 +40,7 @@ export interface FetchDataResult {
   table: string;
   listView?: string;
   detailView?: string;
+  key?: string;
   title: string;
   showFilter: boolean;
   filter: {[k: string]: string};
@@ -57,6 +59,7 @@ export async function fetchData({
   title,
   searchParams,
   table,
+  key,
   listView,
   detailView,
   detailData,
@@ -76,6 +79,7 @@ export async function fetchData({
       asc: !searchParams.has('de')
     },
     table,
+    key,
     detailView,
     listView,
     title,
@@ -167,7 +171,7 @@ export async function fetchData({
       supabase
         .from(detailView || table)
         .select('*')
-        .eq('id', result.id)
+        .eq(key || 'id', result.id)
     );
     const ddk = [];
     if (detailData) {

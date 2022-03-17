@@ -9,9 +9,10 @@
       return event => {
         const el = event.srcElement.parentElement;
         const elr = el.getBoundingClientRect();
+        console.log({value, item})
         goto(
           value.createLink({
-            id: item.id,
+            id: value.key ? item[value.key] : item.id,
             top: elr.top + elr.height + window.scrollY
           })
         );
