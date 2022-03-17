@@ -199,7 +199,7 @@ services:
       - '1100:1100' # POP3
 
   code-server:
-    image: lscr.io/linuxserver/code-server
+    build: code-server
     container_name: code-server
     environment:
       - LETSENCRYPT_HOST=tokoapp-code.senomas.com
