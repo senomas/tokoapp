@@ -175,7 +175,15 @@
   }
 
   table.data-list tbody td {
-    @apply px-6 py-1 color-border sm:max-w-0 truncate;
+    @apply px-6 py-1 border-x color-border sm:max-w-0 truncate;
+  }
+
+  table.data-list tfoot tr {
+    @apply color-header flex flex-col flex-nowrap sm:table-row sm:rounded-l-lg sm:rounded-none mb-2 sm:mb-0;
+  }
+
+  table.data-list tfoot td {
+    @apply px-6 py-1 color-border;
   }
 
   .data-list-paging {
@@ -188,5 +196,46 @@
 
   .data-list-paging .pagination svg {
     @apply pt-1;
+  }
+
+  table.headless svg.inactive {
+    @apply fill-teal-200;
+  }
+
+  table.headless svg.active {
+    @apply fill-white;
+  }
+
+  table.headless {
+    empty-cells: display;
+    @apply w-full rounded-lg overflow-hidden shadow-lg;
+  }
+
+  table.headless thead tr {
+    @apply color-header rounded-l-lg rounded-none mb-0;
+  }
+
+  table.headless thead td {
+    @apply px-6 py-1 color-border;
+  }
+
+  table.headless tbody tr:nth-child(odd) {
+    @apply color-body2 whitespace-nowrap mb-0;
+  }
+
+  table.headless tbody tr:nth-child(even) {
+    @apply whitespace-nowrap mb-0;
+  }
+
+  table.headless tbody td {
+    @apply px-6 py-1 border-x color-border max-w-0 truncate;
+  }
+
+  table.headless tfoot tr {
+    @apply color-header rounded-l-lg rounded-none mb-0;
+  }
+
+  table.headless tfoot td {
+    @apply px-6 py-1 color-border;
   }
 }

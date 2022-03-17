@@ -15,7 +15,6 @@
       sessionStorage.setItem('user', JSON.stringify(v));
     });
     if (user) {
-      console.log({checkUser: {user}});
       supabase.auth.api.getUser(user.access_token).then(({error}) => {
         if (error) {
           user = null;

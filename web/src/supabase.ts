@@ -203,6 +203,192 @@ export async function fetchData({
   return result;
 }
 
+export interface FetchList {
+  table: string;
+  select?: string;
+  list?: {
+    view: string;
+    select: string;
+    filter: {
+      [k: string]: (builder, key, value) => void;
+    };
+  };
+}
+
+export interface FetchListResult {
+  paging: {
+    page: number;
+    lastPage: number;
+    pageSize: number;
+    pagingSize: number;
+    rangeStart: number;
+    rangeEnd: number;
+    pages: number[];
+  };
+  order: {
+    field: string;
+    asc: boolean;
+  };
+  filter: {
+    [k: string]: string;
+  };
+  filterVisible: boolean;
+  total: number;
+  items: any[];
+  id: string;
+  item: any;
+  createLink: (param: any) => string;
+  open: () => void;
+  gotoPage: (page: number) => () => void;
+  toggleOrder: (field: string) => () => void;
+  detailClose: () => void;
+  detailSave: () => void;
+  detailReload: () => void;
+  showFilter: () => void;
+  filterApply: (filter: any) => () => void;
+  filterReset: () => void;
+  filterClose: () => void;
+}
+
+export async function fetchList(
+  {table, select, list}: FetchList,
+  searchParams: URLSearchParams
+) {
+  const result: FetchListResult = {
+    paging: {
+      page: parseInt(searchParams.get('p') || '1'),
+      lastPage: 0,
+      pageSize: parseInt(searchParams.get('s') || '10'),
+      pagingSize: parseInt(searchParams.get('ps') || '10'),
+      rangeStart: null,
+      rangeEnd: null,
+      pages: []
+    },
+    order: {
+      field: searchParams.get('of') || 'id',
+      asc: !searchParams.has('de')
+    },
+    filterVisible: searchParams.has('f'),
+    filter: {},
+    total: null,
+    items: [],
+    id: searchParams.get('id'),
+    item: null,
+    createLink: null,
+    open: null,
+    gotoPage: null,
+    toggleOrder: null,
+    detailSave: null,
+    detailClose: null,
+    detailReload: null,
+    showFilter: null,
+    filterApply: null,
+    filterReset: null,
+    filterClose: null
+  };
+  result.createLink = (p: any) => {
+    const param = {...result, ...p};
+    const q = [];
+    if (param.paging) {
+      if (param.paging.page && param.paging.page > 1) {
+        q.push(['p', param.paging.page]);
+      }
+      if (param.paging.pageSize && param.paging.pageSize != 10) {
+        q.push(['s', param.paging.pageSize]);
+      }
+      if (param.paging.pagingSize && param.paging.pagingSize != 10) {
+        q.push(['ps', param.paging.pagingSize]);
+      }
+    }
+    if (param.order) {
+      if (param.order.field) {
+        q.push(['of', param.order.field]);
+        if (!param.order.asc) {
+          q.push(['de']);
+        }
+      }
+    }
+    if (param.filterVisible) {
+      q.push(['f']);
+    }
+    if (param.filter) {
+      Object.entries(param.filter).forEach(([k, v]) => {
+        q.push([`f_${k}`, v]);
+      });
+    }
+    if (param.id) {
+      q.push(['id', param.id]);
+    }
+    if (param.top && param.top > 0) {
+      q.push(['top', param.top]);
+    }
+    return `?${q
+      .map(([k, v]) =>
+        v
+          ? `${encodeURIComponent(k)}=${encodeURIComponent(v)}`
+          : encodeURIComponent(k)
+      )
+      .join('&')}`;
+  };
+  const builder = supabase
+    .from(list?.view || table)
+    .select(list?.select || '*', {count: 'exact'});
+  searchParams.forEach((v, k) => {
+    if (k.startsWith('f_')) {
+      const fk = k.substring(2);
+      result.filter[fk] = v;
+      if (list?.filter[fk]) {
+        list.filter[fk](builder, fk, v);
+      }
+    }
+  });
+  if (result.order && result.order.field) {
+    builder.order(result.order.field, {ascending: result.order.asc});
+  }
+  const rangeStart = (result.paging.page - 1) * result.paging.pageSize;
+  const rangeEnd = rangeStart + result.paging.pageSize - 1;
+  const {data, count, error} = await builder.range(rangeStart, rangeEnd);
+  if (error) throw error;
+  result.items = data.map(v =>
+    Object.entries(v).reduce((acc, [k, v]) => {
+      acc[k] = v || '';
+      return acc;
+    }, {})
+  );
+  result.total = count;
+  result.paging.rangeStart = rangeStart + 1;
+  result.paging.rangeEnd = Math.min(rangeEnd + 1, count);
+  result.paging.lastPage = Math.floor(
+    (result.total + result.paging.pageSize - 1) / result.paging.pageSize
+  );
+  let pmin = Math.max(
+    1,
+    result.paging.page - Math.floor(result.paging.pagingSize / 2) + 1
+  );
+  let pmax = Math.min(
+    result.paging.lastPage,
+    result.paging.page + Math.floor(result.paging.pagingSize / 2) - 1
+  );
+  pmin = Math.min(pmin, Math.max(1, pmax - result.paging.pageSize + 1));
+  pmax = Math.max(
+    pmax,
+    Math.min(result.paging.lastPage, pmin + result.paging.pageSize - 1)
+  );
+  result.paging.pages = [];
+  for (let p = pmin; p <= pmax; p++) {
+    result.paging.pages.push(p);
+  }
+  if (result.id) {
+    const {data, error} = await supabase
+      .from(table)
+      .select(select || '*')
+      .eq('id', result.id);
+    if (error) throw error;
+    result.item = data[0];
+  }
+  return result;
+}
+
 export async function filter_ilike(builder, key, value) {
   builder.ilike(key, `%${value}%`);
 }
