@@ -30,31 +30,33 @@
   {#each value.items as _}
     <tr>
       {#each Object.entries(value.field) as [f, field]}
-        <td on:click={() => changeSort(f)} class={field.class || ''}
-          ><div class="flex space-x-1">
-            <div class={field.label ? '' : 'fix-case'}>
-              {field.label || f}
-            </div>
-            {#if field.sortable}
-              <div class="relative">
-                <div class="absolute left-0">
-                  <CarretUpIcon
-                    class={value.order.field === f && !value.order.asc
-                      ? 'active'
-                      : 'inactive'}
-                  />
-                </div>
-                <div class="absolute left-0 top-2">
-                  <CarretDownIcon
-                    class={value.order.field === f && value.order.asc
-                      ? 'active'
-                      : 'inactive'}
-                  />
-                </div>
+        {#if field.list !== 'none'}
+          <td on:click={() => changeSort(f)} class={field.class || ''}
+            ><div class="flex space-x-1">
+              <div class={field.label ? '' : 'fix-case'}>
+                {field.label || f}
               </div>
-            {/if}
-          </div></td
-        >
+              {#if field.sortable}
+                <div class="relative">
+                  <div class="absolute left-0">
+                    <CarretUpIcon
+                      class={value.order.field === f && !value.order.asc
+                        ? 'active'
+                        : 'inactive'}
+                    />
+                  </div>
+                  <div class="absolute left-0 top-2">
+                    <CarretDownIcon
+                      class={value.order.field === f && value.order.asc
+                        ? 'active'
+                        : 'inactive'}
+                    />
+                  </div>
+                </div>
+              {/if}
+            </div></td
+          >
+        {/if}
       {/each}
     </tr>
   {/each}

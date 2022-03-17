@@ -3,11 +3,17 @@ contents:
   - __type: List
     title: User
     table: user_views
-    key: email
     listView: user_views
     field:
+      id:
+        label: ID
+        class: sm:w-60
+        sortable: true
+        list: none
+        detail: none
+        filter: none
       email:
-        class: sm:w-60 lg:w-80
+        class: sm:w-40 lg:w-80
         sortable: true
       roles:
         class: sm:w-80 lg:w-[20rem]

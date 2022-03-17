@@ -15,7 +15,7 @@
 
   export let title;
   export let table;
-  export let key;
+  export let key = null;
   export let detailView = table;
   export let detailData: any = {};
   export let listView = table;
@@ -57,18 +57,25 @@
   }
 
   async function save(_) {
-    console.log({save: {item: value.item}});
+    const key = value.key || 'id';
+    const updateValue = {};
+    Object.entries(value.field).forEach(([fk,fv]) => {
+      if (fk === key) {
+        //skip
+      } else if (fv.detail && fv.detail.id) {
+        updateValue[fv.detail.id] = value.item[fv.detail.id];
+      } else {
+        updateValue[fk] = value.item[fk];
+      }
+    })
+    console.log({save: {key: { [key]: value.item[key]}, updateValue, item: value.item}});
     const {error} = await supabase
       .from(table)
       .update(
-        {
-          category_id: value.item.category_id,
-          name: value.item.name,
-          description: value.item.description
-        },
+        updateValue,
         {returning: 'minimal'}
       )
-      .eq('id', value.item.id);
+      .eq(key, value.item[key]);
     if (error) throw error;
     const link = value.createLink({id: null, top: null});
     goto(link);

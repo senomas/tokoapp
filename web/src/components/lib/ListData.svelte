@@ -9,7 +9,6 @@
       return event => {
         const el = event.srcElement.parentElement;
         const elr = el.getBoundingClientRect();
-        console.log({value, item})
         goto(
           value.createLink({
             id: value.key ? item[value.key] : item.id,
@@ -24,10 +23,12 @@
 
 <tr on:click={open(item)}>
   {#each Object.entries(value.field) as [f, field]}
-    <td
-      class={[field.dataClass, value.detailView ? 'cursor-pointer' : ''].join(
-        ' '
-      ) || ''}>{@html item[f] || '&nbsp;'}</td
-    >
+    {#if field.list !== 'none'}
+      <td
+        class={[field.dataClass, value.detailView ? 'cursor-pointer' : ''].join(
+          ' '
+        ) || ''}>{@html item[f] || '&nbsp;'}</td
+      >
+    {/if}
   {/each}
 </tr>
