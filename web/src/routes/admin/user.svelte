@@ -1,16 +1,16 @@
 <script lang="ts">
-  import {filter_ilike, type FetchList} from '../supabase';
-  import List from '../components/headless/List.svelte';
-  import OrderByIcon from '../components/icons/OrderByIcon.svelte';
-  import Input from '../components/lib/Input.svelte';
+  import {filter_ilike, type FetchList} from '../../supabase';
+  import List from '../../components/headless/List.svelte';
+  import OrderByIcon from '../../components/icons/OrderByIcon.svelte';
+  import Input from '../../components/lib/Input.svelte';
 
   let config: FetchList = {
-    table: 'items',
+    table: 'user_views',
     cache: 60000,
     detail: {
-      view: 'item_views',
+      view: 'user_views',
       select: '*',
-      fields: ['category_id', 'name', 'description'],
+      fields: ['email', 'roles'],
       options: {
         categories: {
           table: 'item_category_views',
@@ -21,13 +21,12 @@
       }
     },
     list: {
-      view: 'item_views',
+      view: 'user_views',
       select: '*',
       filter: {
         id: filter_ilike,
-        category: filter_ilike,
-        name: filter_ilike,
-        description: filter_ilike
+        email: filter_ilike,
+        roles: filter_ilike
       }
     }
   };
@@ -55,17 +54,16 @@
         </td>
         <td on:click={value.toggleOrder('category')}
           ><div class="flex space-x-1 justify-center">
-            <div>Category</div>
-            <OrderByIcon id="category" {value} />
+            <div>EMail</div>
+            <OrderByIcon id="email" {value} />
           </div></td
         >
         <td on:click={value.toggleOrder('name')}
           ><div class="flex space-x-1 justify-center">
-            <div>Name</div>
-            <OrderByIcon id="name" {value} />
+            <div>Roles</div>
+            <OrderByIcon id="roles" {value} />
           </div></td
         >
-        <td class="hidden lg:table-cell">Description</td>
       </tr>
     </thead>
     <tbody>
@@ -74,23 +72,22 @@
           <td class="sm:hidden color-header">ID</td>
           <td class="sm:hidden" colspan="3">{item.id}</td>
           <td class="hidden sm:table-cell">{item.id}</td>
-          <td class="hidden sm:table-cell">{item.category}</td>
-          <td class="hidden sm:table-cell">{item.name}</td>
-          <td class="hidden lg:table-cell">{item.description}</td>
+          <td class="hidden sm:table-cell">{item.email}</td>
+          <td class="hidden sm:table-cell">{item.roles}</td>
         </tr>
         <tr class="sm:hidden" on:click={item.open}>
           <td class="sm:hidden color-header">Category</td>
-          <td class="sm:hidden" colspan="3">{item.category}</td>
+          <td class="sm:hidden" colspan="3">{item.email}</td>
         </tr>
         <tr class="sm:hidden" on:click={item.open}>
           <td class="sm:hidden color-header">Name</td>
-          <td class="sm:hidden" colspan="3">{item.name}</td>
+          <td class="sm:hidden" colspan="3">{item.roles}</td>
         </tr>
       {/each}
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="4">
+        <td colspan="3">
           <div class="flex justify-between px-1">
             <div>
               {#if value.total > 0}

@@ -205,7 +205,23 @@ export async function fetchData({
 
 export interface FetchList {
   table: string;
-  select?: string;
+  loadingAnimationDelay?: number;
+  cache?: number;
+  detail?: {
+    view: string;
+    select: string;
+    key?: string;
+    fields?: (string | {id: string; nullable: boolean})[];
+    options?: {
+      [k: string]: {
+        table: string;
+        key: string;
+        value: string;
+        order: string;
+        asc?: boolean;
+      };
+    };
+  };
   list?: {
     view: string;
     select: string;
@@ -215,45 +231,7 @@ export interface FetchList {
   };
 }
 
-export interface FetchListResult {
-  paging: {
-    page: number;
-    lastPage: number;
-    pageSize: number;
-    pagingSize: number;
-    rangeStart: number;
-    rangeEnd: number;
-    pages: number[];
-  };
-  order: {
-    field: string;
-    asc: boolean;
-  };
-  filter: {
-    [k: string]: string;
-  };
-  filterVisible: boolean;
-  total: number;
-  items: any[];
-  id: string;
-  item: any;
-  createLink: (param: any) => string;
-  open: () => void;
-  gotoPage: (page: number) => () => void;
-  toggleOrder: (field: string) => () => void;
-  detailClose: () => void;
-  detailSave: () => void;
-  detailReload: () => void;
-  showFilter: () => void;
-  filterApply: (filter: any) => () => void;
-  filterReset: () => void;
-  filterClose: () => void;
-}
-
-export async function fetchList(
-  {table, select, list}: FetchList,
-  searchParams: URLSearchParams
-) {
+export function initListResult(searchParams: URLSearchParams): FetchListResult {
   const result: FetchListResult = {
     paging: {
       page: parseInt(searchParams.get('p') || '1'),
@@ -271,6 +249,8 @@ export async function fetchList(
     filterVisible: searchParams.has('f'),
     filter: {},
     total: null,
+    timestamp: searchParams.get('ts'),
+    itemsKey: null,
     items: [],
     id: searchParams.get('id'),
     item: null,
@@ -289,6 +269,9 @@ export async function fetchList(
   result.createLink = (p: any) => {
     const param = {...result, ...p};
     const q = [];
+    if (param.timestamp) {
+      q.push(['ts', param.timestamp]);
+    }
     if (param.paging) {
       if (param.paging.page && param.paging.page > 1) {
         q.push(['p', param.paging.page]);
@@ -330,62 +313,150 @@ export async function fetchList(
       )
       .join('&')}`;
   };
-  const builder = supabase
-    .from(list?.view || table)
-    .select(list?.select || '*', {count: 'exact'});
-  searchParams.forEach((v, k) => {
-    if (k.startsWith('f_')) {
-      const fk = k.substring(2);
-      result.filter[fk] = v;
-      if (list?.filter[fk]) {
-        list.filter[fk](builder, fk, v);
+  return result;
+}
+export interface FetchListResult {
+  paging: {
+    page: number;
+    lastPage: number;
+    pageSize: number;
+    pagingSize: number;
+    rangeStart: number;
+    rangeEnd: number;
+    pages: number[];
+  };
+  order: {
+    field: string;
+    asc: boolean;
+  };
+  filter: {
+    [k: string]: string;
+  };
+  filterVisible: boolean;
+  total: number;
+  timestamp: string;
+  itemsKey: string;
+  items: any[];
+  id: string;
+  item: any;
+  options?: {
+    [k: string]: {key; value}[];
+  };
+  createLink: (param: any) => string;
+  open: () => void;
+  gotoPage: (page: number) => () => void;
+  toggleOrder: (field: string) => () => void;
+  detailClose: () => void;
+  detailSave: (item: any) => () => void;
+  detailReload: () => void;
+  showFilter: () => void;
+  filterApply: (filter: any) => () => void;
+  filterReset: () => void;
+  filterClose: () => void;
+}
+
+export async function fetchList(
+  {table, cache, detail, list}: FetchList,
+  searchParams: URLSearchParams,
+  previous: FetchListResult
+) {
+  const result = initListResult(searchParams);
+  result.itemsKey = result.createLink({id: null, filterVisible: null});
+  const procs = [];
+  procs.push(
+    (async () => {
+      if (result.itemsKey !== previous.itemsKey) {
+        const builder = supabase
+          .from(list?.view || table)
+          .select(list?.select || '*', {count: 'exact'});
+        searchParams.forEach((v, k) => {
+          if (k.startsWith('f_')) {
+            const fk = k.substring(2);
+            result.filter[fk] = v;
+            if (list?.filter[fk]) {
+              list.filter[fk](builder, fk, v);
+            }
+          }
+        });
+        if (result.order && result.order.field) {
+          builder.order(result.order.field, {ascending: result.order.asc});
+        }
+        const rangeStart = (result.paging.page - 1) * result.paging.pageSize;
+        const rangeEnd = rangeStart + result.paging.pageSize - 1;
+        const {data, count, error} = await builder.range(rangeStart, rangeEnd);
+        if (error) throw error;
+        result.timestamp = String(Math.floor(Date.now() / (cache || 60000)));
+        result.items = data.map(v =>
+          Object.entries(v).reduce((acc, [k, v]) => {
+            acc[k] = v || '';
+            return acc;
+          }, {})
+        );
+        result.total = count;
+        result.paging.rangeStart = rangeStart + 1;
+        result.paging.rangeEnd = Math.min(rangeEnd + 1, count);
+        result.paging.lastPage = Math.floor(
+          (result.total + result.paging.pageSize - 1) / result.paging.pageSize
+        );
+      } else {
+        result.timestamp = previous.timestamp;
+        result.items = previous.items;
+        result.total = previous.total;
+        result.paging = previous.paging;
+      }
+      let pmin = Math.max(
+        1,
+        result.paging.page - Math.floor(result.paging.pagingSize / 2) + 1
+      );
+      let pmax = Math.min(
+        result.paging.lastPage,
+        result.paging.page + Math.floor(result.paging.pagingSize / 2) - 1
+      );
+      pmin = Math.min(pmin, Math.max(1, pmax - result.paging.pageSize + 1));
+      pmax = Math.max(
+        pmax,
+        Math.min(result.paging.lastPage, pmin + result.paging.pageSize - 1)
+      );
+      result.paging.pages = [];
+      for (let p = pmin; p <= pmax; p++) {
+        result.paging.pages.push(p);
+      }
+    })()
+  );
+  if (result.id) {
+    procs.push(
+      (async () => {
+        const {data, error} = await supabase
+          .from(detail?.view || table)
+          .select(detail?.select || '*')
+          .eq('id', result.id);
+        if (error) throw error;
+        result.item = data[0];
+      })()
+    );
+    if (detail?.options) {
+      result.options = {};
+      for (const [ok, opt] of Object.entries(detail.options)) {
+        procs.push(
+          (async () => {
+            const builder = supabase
+              .from(opt.table)
+              .select(`${opt.key}, ${opt.value}`);
+            if (opt.order) {
+              builder.order(opt.order, {ascending: !!opt.asc});
+            }
+            const {data, error} = await builder;
+            if (error) throw error;
+            result.options[ok] = data.map(v => ({
+              key: v[opt.key || 'id'],
+              value: v[opt.value || 'value']
+            }));
+          })()
+        );
       }
     }
-  });
-  if (result.order && result.order.field) {
-    builder.order(result.order.field, {ascending: result.order.asc});
   }
-  const rangeStart = (result.paging.page - 1) * result.paging.pageSize;
-  const rangeEnd = rangeStart + result.paging.pageSize - 1;
-  const {data, count, error} = await builder.range(rangeStart, rangeEnd);
-  if (error) throw error;
-  result.items = data.map(v =>
-    Object.entries(v).reduce((acc, [k, v]) => {
-      acc[k] = v || '';
-      return acc;
-    }, {})
-  );
-  result.total = count;
-  result.paging.rangeStart = rangeStart + 1;
-  result.paging.rangeEnd = Math.min(rangeEnd + 1, count);
-  result.paging.lastPage = Math.floor(
-    (result.total + result.paging.pageSize - 1) / result.paging.pageSize
-  );
-  let pmin = Math.max(
-    1,
-    result.paging.page - Math.floor(result.paging.pagingSize / 2) + 1
-  );
-  let pmax = Math.min(
-    result.paging.lastPage,
-    result.paging.page + Math.floor(result.paging.pagingSize / 2) - 1
-  );
-  pmin = Math.min(pmin, Math.max(1, pmax - result.paging.pageSize + 1));
-  pmax = Math.max(
-    pmax,
-    Math.min(result.paging.lastPage, pmin + result.paging.pageSize - 1)
-  );
-  result.paging.pages = [];
-  for (let p = pmin; p <= pmax; p++) {
-    result.paging.pages.push(p);
-  }
-  if (result.id) {
-    const {data, error} = await supabase
-      .from(table)
-      .select(select || '*')
-      .eq('id', result.id);
-    if (error) throw error;
-    result.item = data[0];
-  }
+  await Promise.all(procs);
   return result;
 }
 

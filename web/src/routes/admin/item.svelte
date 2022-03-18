@@ -1,8 +1,8 @@
 <script lang="ts">
-  import {filter_ilike, type FetchList} from '../supabase';
-  import List from '../components/headless/List.svelte';
-  import OrderByIcon from '../components/icons/OrderByIcon.svelte';
-  import Input from '../components/lib/Input.svelte';
+  import {filter_ilike, type FetchList} from '../../supabase';
+  import List from '../../components/headless/List.svelte';
+  import OrderByIcon from '../../components/icons/OrderByIcon.svelte';
+  import Input from '../../components/lib/Input.svelte';
 
   let config: FetchList = {
     table: 'items',
