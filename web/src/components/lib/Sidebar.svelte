@@ -4,7 +4,8 @@
   import {User} from '../../store';
   import {goto as _goto} from '$app/navigation';
   import DocumentIcon from '../icons/DocumentIcon.svelte';
-  import {onMount} from 'svelte';
+  import HomeIcon from '../icons/HomeIcon.svelte';
+  import UserIcon from '../icons/UserIcon.svelte';
 
   let url;
   let pathnames;
@@ -24,12 +25,12 @@
 
   export let menus: any[] = [
     {
-      icon: '../icons/HomeIcon',
+      icon: HomeIcon,
       label: 'Home',
       link: '/'
     },
     {
-      icon: '../icons/UserIcon',
+      icon: UserIcon,
       label: 'User',
       link: '/admin/user'
     },
@@ -102,23 +103,13 @@
       visible[id] = false;
     };
   }
-
-  onMount(async () => {
-    for (const menu of menus) {
-      if (menu.icon) {
-        menu.iconComponent = (
-          await import(/* @vite-ignore */ `${menu.icon}.svelte`)
-        ).default;
-      }
-    }
-    menus = menus;
-  });
 </script>
 
 <nav
   class="absolute z-10 select-none bg-indigo-900 text-white h-full min-h-screen transition-all {visible.sidebar
     ? 'w-64'
     : 'hidden sm:block sm:w-14'}"
+  id="sidebar"
   on:mouseenter={mouseover('sidebar')}
   on:mouseleave={mouseover('sidebar')}
 >
@@ -127,6 +118,7 @@
       <li
         class="flex h-[4.5rem] items-center justify-between px-4 space-x-2 hover:bg-indigo-800"
         on:click|preventDefault={hide('sidebar')}
+        id="header"
       >
         <span class="font-bold text-2xl sm:text-3xl p-4">Sidebar</span>
         <svg

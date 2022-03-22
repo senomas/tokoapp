@@ -42,3 +42,6 @@ workspace.code-workspace
 
 supabase/.htpasswd
 supabase/code-server
+web/.package.json
+web/test-e2e/lib.ts
+web/log

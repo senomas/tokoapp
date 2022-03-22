@@ -2,7 +2,7 @@ FROM node:lts-slim
 
 WORKDIR /app
 
-ADD package.json /app/
+ADD .package.json /app/package.json
 ADD package-lock.json /app/
 
 RUN npm install

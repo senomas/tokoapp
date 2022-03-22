@@ -4,20 +4,26 @@
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
+    "docker-build": "node util/clean-package.js && cd ../supabase && docker-compose build web e2e-test",
     "package": "svelte-kit package",
     "preview": "docker run --rm -v `pwd`/nginx.conf:/etc/nginx/nginx.conf:ro -v `pwd`/build:/data/www -p 3000:3000 nginx",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
     "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
-    "supabase": "cd ../supabase && docker-compose up -d",
+    "supabase": "cd ../supabase && docker-compose up -d studio kong auth rest realtime storage meta db",
     "supabase-stop": "cd ../supabase && docker-compose down -v",
     "flyway": "docker run --rm --network=tokoapp_default -v `pwd`/../sql:/flyway/sql -v `pwd`/../flyway.conf:/flyway/conf/flyway.conf flyway/flyway:8.5.2",
     "init-data": "npm run flyway -- -target=2 migrate && node init-user.js && npm run flyway migrate",
     "predev": "npm run supabase && npm run init-data && npm run flyway migrate",
-    "postdev": "npm run supabase-stop"
+    "postdev": "npm run supabase-stop",
+    "test": "cd ../supabase && docker-compose up e2e-test",
+    "pretest": "npm run docker-build && npm run predev && cd ../supabase && docker-compose up -d web nginx",
+    "posttest": "cd ../supabase && docker-compose down -v",
+    "qtest": "(mkdir log || rm -rf log/*) && cd ../supabase && docker-compose build web && docker-compose up e2e-test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.20.0",
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/adapter-node": "^1.0.0-next.70",
     "@sveltejs/adapter-static": "next",
