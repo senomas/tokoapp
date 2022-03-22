@@ -109,11 +109,12 @@
     </div>
     {#if listOpen}
       <div
-        class="border color-input-focus rounded absolute top-15 z-50 w-full max-h-[15rem] overflow-y-auto"
+        id={tagId}
+        class="options border color-input-focus rounded absolute top-15 z-50 w-full max-h-[15rem] overflow-y-auto"
       >
         <ul>
           <li
-            class="color-input-hover"
+            class="option color-input-hover"
             on:mousedown|stopPropagation={e => select(null, e)}
           >
             <span class="px-2" />
@@ -122,7 +123,7 @@
             {#each options as opt}
               {#if opt?.value?.toLowerCase().includes(selectValueLC)}
                 <li
-                  class="color-input-hover"
+                  class="option color-input-hover"
                   on:mousedown|stopPropagation={e => select(opt, e)}
                 >
                   <span class="px-2">{opt.value}</span>

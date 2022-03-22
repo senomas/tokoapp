@@ -43,7 +43,7 @@ services:
     build: ../web/test-e2e
     volumes:
       - ../web:/app
-    command: bash -c "cd /app/test-e2e && npx playwright test"
+    command: bash -c "cd /app/test-e2e && npx playwright test --workers 1"
 
   studio:
     container_name: supabase-studio

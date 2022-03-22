@@ -19,7 +19,7 @@ const supabase = createClient(
   env.VITE_SUPABASE_ANON_KEY
 );
 
-async function createUser({email, password}) {
+async function createUser({email, password}, retry = 0) {
   const {user, error} = await supabase.auth.signUp({
     email,
     password
@@ -28,6 +28,9 @@ async function createUser({email, password}) {
     if (error.status === 400 && error.message === 'User already registered') {
       console.log({email, ...error});
       return;
+    } else if (error.code === 'ECONNREFUSED' && retry < 3) {
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      return await createUser({email, password}, retry + 1);
     }
     throw error;
   }

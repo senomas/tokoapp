@@ -104,7 +104,9 @@
       res.filterApply = filter => {
         return () => {
           value.itemsKey = null;
-          goto(res.createLink({filterVisible: null, filter}));
+          goto(
+            res.createLink({paging: {page: null}, filterVisible: null, filter})
+          );
         };
       };
       res.filterReset = () => {

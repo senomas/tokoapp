@@ -41,7 +41,7 @@
 </script>
 
 <List {config} let:value let:loadingAnimation on:change={onChange}>
-  <table class="headless">
+  <table id="items" class="headless">
     <thead class="sm:hidden">
       <tr><td colspan="4">TABLE HEADER</td></tr>
     </thead>
@@ -101,6 +101,7 @@
             </div>
             <div class="flex space-x-4">
               <div
+                id="filter"
                 class={Object.keys(filter).length > 0 ? 'link' : 'link-'}
                 on:click={value.showFilter}
               >
@@ -120,7 +121,7 @@
               </div>
               {#each value.paging.pages as p}
                 <div
-                  class={value.paging.page != p ? 'link' : 'link-'}
+                  class={value.paging.page != p ? 'page link' : 'page link-'}
                   on:click={value.gotoPage(p)}
                 >
                   {p}
@@ -169,13 +170,15 @@
             />
           </div>
           <div class="footer">
-            <button class="btn-primary" on:click={value.filterApply(filter)}
-              >Apply</button
+            <button
+              id="apply"
+              class="btn-primary"
+              on:click={value.filterApply(filter)}>Apply</button
             >
-            <button class="btn-cancel" on:click={value.filterClose}
+            <button id="close" class="btn-cancel" on:click={value.filterClose}
               >Close</button
             >
-            <button class="btn-cancel" on:click={value.filterReset}
+            <button id="reset" class="btn-cancel" on:click={value.filterReset}
               >Reset</button
             >
           </div>
@@ -193,6 +196,7 @@
             <Input
               type="select"
               id="category_id"
+              label="Category"
               bind:value={item}
               class="w-full"
               options={value.options.categories}
@@ -205,10 +209,12 @@
             />
           </div>
           <div class="footer">
-            <button class="btn-primary" on:click={value.detailSave(item)}
-              >Save</button
+            <button
+              id="save"
+              class="btn-primary"
+              on:click={value.detailSave(item)}>Save</button
             >
-            <button class="btn-cancel" on:click={value.detailClose}
+            <button id="close" class="btn-cancel" on:click={value.detailClose}
               >Close</button
             >
           </div>

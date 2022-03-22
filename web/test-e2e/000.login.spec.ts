@@ -1,7 +1,7 @@
 import {test, expect} from '@playwright/test';
 import {enhance} from './lib';
 
-test('login', async ({page}) => {
+test('000.login', async ({page}) => {
   const {screenshot} = enhance('login', page);
 
   await page.goto('http://nginx:8000/', {waitUntil: 'networkidle'});
