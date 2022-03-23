@@ -118,7 +118,6 @@
       };
       value = res;
       dispatch('change', value);
-      console.log({fetchItems: {value}});
     } catch (err) {
       console.log({'FETCH-ERROR': {err}});
     } finally {

@@ -6,6 +6,7 @@ node_modules
 /log
 /screenshot
 /videos
+test-e2e/test-results
 .env
 .env.*
 !.env.example

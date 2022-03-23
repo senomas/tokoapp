@@ -380,6 +380,9 @@ export async function fetchList(
         });
         if (result.order && result.order.field) {
           builder.order(result.order.field, {ascending: result.order.asc});
+          if (result.order.field !== 'id') {
+            builder.order('id', {ascending: result.order.asc});
+          }
         }
         const rangeStart = (result.paging.page - 1) * result.paging.pageSize;
         const rangeEnd = rangeStart + result.paging.pageSize - 1;

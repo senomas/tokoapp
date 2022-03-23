@@ -41,10 +41,11 @@ services:
       - 8030:3000
   e2e-test:
     build: ../web/test-e2e
+    # environment:
+    #   LOG_HTTP: 1
     volumes:
       - ../web:/app
-    command: bash -c "cd /app/test-e2e && npx playwright test --workers 1"
-
+    command: bash -c "cd /app/test-e2e && npx playwright test --workers=1 --max-failures=1"
   studio:
     container_name: supabase-studio
     image: supabase/studio:latest

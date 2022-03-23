@@ -18,9 +18,9 @@
     "predev": "npm run supabase-stop && npm run supabase && npm run init-data && npm run flyway migrate",
     "postdev": "npm run supabase-stop",
     "test": "cd ../supabase && docker-compose up e2e-test",
-    "pretest": "npm run docker-build && npm run predev && cd ../supabase && docker-compose up -d web nginx",
-    "posttest": "cd ../supabase && docker-compose down -v",
-    "qtest": "(mkdir screenshot || rm -rf screenshot/*) && (mkdir videos || rm -rf videos/*) && cd ../supabase && docker-compose build web && docker-compose up -d web nginx && docker-compose up e2e-test"
+    "pretest": "(mkdir screenshot || rm -rf screenshot/*) && (mkdir videos || rm -rf videos/*) && npm run docker-build && npm run predev && cd ../supabase && docker-compose up -d web nginx",
+    "qtest": "cd ../supabase && docker-compose up e2e-test",
+    "preqtest": "(mkdir screenshot || rm -rf screenshot/*) && (mkdir videos || rm -rf videos/*) && npm run docker-build && cd ../supabase && docker-compose up -d web nginx"
   },
   "devDependencies": {
     "@playwright/test": "^1.20.0",

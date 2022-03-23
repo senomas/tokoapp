@@ -46,7 +46,6 @@
           description: filter_ilike
         }
       });
-      console.log({fetchItems: {value}});
     } finally {
       loading = false;
       if (loadingTimeout) {
@@ -59,7 +58,7 @@
   async function save(_) {
     const key = value.key || 'id';
     const updateValue = {};
-    Object.entries(value.field).forEach(([fk,fv]) => {
+    Object.entries(value.field).forEach(([fk, fv]) => {
       if (fk === key) {
         //skip
       } else if (fv.detail && fv.detail.id) {
@@ -67,14 +66,13 @@
       } else {
         updateValue[fk] = value.item[fk];
       }
-    })
-    console.log({save: {key: { [key]: value.item[key]}, updateValue, item: value.item}});
+    });
+    console.log({
+      save: {key: {[key]: value.item[key]}, updateValue, item: value.item}
+    });
     const {error} = await supabase
       .from(table)
-      .update(
-        updateValue,
-        {returning: 'minimal'}
-      )
+      .update(updateValue, {returning: 'minimal'})
       .eq(key, value.item[key]);
     if (error) throw error;
     const link = value.createLink({id: null, top: null});
