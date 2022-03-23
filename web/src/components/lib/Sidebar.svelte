@@ -164,8 +164,8 @@
           : 'hover:bg-indigo-800 cursor-pointer'}"
         on:click={goto(menu.link, null, url)}
       >
-        {#if menu.iconComponent}
-          <svelte:component this={menu.iconComponent} />
+        {#if menu.icon}
+          <svelte:component this={menu.icon} />
         {:else}
           <DocumentIcon />
         {/if}

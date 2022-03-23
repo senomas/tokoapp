@@ -66,7 +66,6 @@
             }
             return acc;
           }, {});
-          console.log({key, keyValue, updateValue});
           (async () => {
             value.itemsKey = null;
             loading = true;
@@ -79,7 +78,6 @@
                 .update(updateValue, {returning: 'minimal'})
                 .eq(key, keyValue);
               if (error) throw error;
-              console.log({data, error});
               goto(res.createLink({id: null}));
             } finally {
               loading = false;
