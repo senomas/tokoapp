@@ -249,4 +249,16 @@
   table.headless tfoot td {
     @apply px-6 py-1 color-border;
   }
+
+  table.headless tfoot .filter {
+    @apply flex space-x-2;
+  }
+
+  table.headless tfoot .filter .item {
+    @apply bg-white text-black max-w-max flex items-center justify-between py-1 pl-3 pr-1 rounded-full last:mr-0 mr-1 transition-all duration-300 pb-1;
+  }
+
+  table.headless tfoot .filter .remove {
+    @apply hover:bg-blue-300 text-black text-sm pb-1 leading-none rounded-full w-4 h-4 cursor-pointer grid place-items-center p-0;
+  }
 }

@@ -14,7 +14,7 @@
 
   export let config: FetchList;
 
-  let value: FetchListResult = initListResult($_page.url.searchParams);
+  let value: FetchListResult = initListResult(config, $_page.url.searchParams);
   let loading = true;
   let loadingAnimation = true;
 
@@ -96,23 +96,46 @@
       res.detailClose = () => {
         goto(res.createLink({id: null}));
       };
-      res.showFilter = () => {
-        goto(res.createLink({filterVisible: true}));
+      res.newFilter = () => {
+        goto(res.createLink({filterIndex: true}));
       };
-      res.filterApply = filter => {
+      res.filterAdd = filter => {
         return () => {
-          value.itemsKey = null;
-          goto(
-            res.createLink({paging: {page: null}, filterVisible: null, filter})
-          );
+          res.filter.push({
+            field: filter.field,
+            operand: filter.operand,
+            value: filter.value
+          });
+          filter.index = null;
+          filter.field = null;
+          filter.operand = null;
+          filter.value = null;
+          goto(res.createLink({filterIndex: false, filter: res.filter}));
         };
       };
-      res.filterReset = () => {
-        value.itemsKey = null;
-        goto(res.createLink({filterVisible: null, filter: {}}));
+      res.filterSave = filter => {
+        return () => {
+          console.log({save: {filter}});
+          filter.index = null;
+          filter.field = null;
+          filter.operand = null;
+          filter.value = null;
+          goto(res.createLink({filterIndex: false, filter: res.filter}));
+        };
+      };
+      res.filterEdit = index => {
+        return () => {
+          goto(res.createLink({filterIndex: index}));
+        };
+      };
+      res.filterRemove = index => {
+        return () => {
+          res.filter.splice(index, 1);
+          goto(res.createLink({filterIndex: null, filter: res.filter}));
+        };
       };
       res.filterClose = () => {
-        goto(res.createLink({filterVisible: null}));
+        goto(res.createLink({filterIndex: null}));
       };
       value = res;
       dispatch('change', value);

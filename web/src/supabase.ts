@@ -1,4 +1,3 @@
-import type {PostgrestFilterBuilder} from '@supabase/postgrest-js';
 import {createClient} from '@supabase/supabase-js';
 
 export const supabase = createClient(
@@ -6,202 +5,17 @@ export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY as string
 );
 
-export interface FetchData {
-  title?: string;
-  searchParams: URLSearchParams;
-  table: string;
-  listView?: string;
-  detailView?: string;
-  key?: string;
-  detailData: {
-    [k: string]: {
-      table: string;
-      columns: string[];
-      orderColumn?: string;
-      ascending?: boolean;
-    };
-  };
-  field: {[k: string]: any};
-  filter: {
-    [key: string]: (
-      builder: PostgrestFilterBuilder<any>,
-      key: string,
-      value: string
-    ) => void;
-  };
-}
-
-export interface FetchDataResult {
-  paging: any;
-  order: {
-    field: string;
-    asc: boolean;
-  };
-  table: string;
-  listView?: string;
-  detailView?: string;
-  key?: string;
-  title: string;
-  showFilter: boolean;
-  filter: {[k: string]: string};
-  field: {[k: string]: any};
-  total: number;
-  items: any[];
-  item: any;
-  itemData: {[k: string]: any[]};
-  top: number;
-  id: string;
-  newItem: boolean;
-  createLink: (param: any) => string;
-}
-
-export async function fetchData({
-  title,
-  searchParams,
-  table,
-  key,
-  listView,
-  detailView,
-  detailData,
-  field,
-  filter
-}: FetchData): Promise<FetchDataResult> {
-  const result: FetchDataResult = {
-    paging: {
-      page: parseInt(searchParams.get('p') || '1'),
-      pageSize: parseInt(searchParams.get('s') || '10'),
-      pagingSize: parseInt(searchParams.get('ps') || '10'),
-      rangeStart: null,
-      rangeEnd: null
-    },
-    order: {
-      field: searchParams.get('of'),
-      asc: !searchParams.has('de')
-    },
-    table,
-    key,
-    detailView,
-    listView,
-    title,
-    showFilter: searchParams.has('f'),
-    newItem: searchParams.has('new'),
-    filter: {} as any,
-    field,
-    total: null,
-    items: null,
-    item: null,
-    itemData: null,
-    top: parseInt(searchParams.get('top') || '0'),
-    id: searchParams.get('id'),
-    createLink: null
-  };
-
-  result.createLink = (p: any) => {
-    const param = {...result, ...p};
-    const q = [];
-    if (param.paging) {
-      if (param.paging.page && param.paging.page > 1) {
-        q.push(['p', param.paging.page]);
-      }
-      if (param.paging.pageSize && param.paging.pageSize != 10) {
-        q.push(['s', param.paging.pageSize]);
-      }
-      if (param.paging.pagingSize && param.paging.pagingSize != 10) {
-        q.push(['ps', param.paging.pagingSize]);
-      }
-    }
-    if (param.order) {
-      if (param.order.field) {
-        q.push(['of', param.order.field]);
-        if (!param.order.asc) {
-          q.push(['de']);
-        }
-      }
-    }
-    if (param.showFilter) {
-      q.push(['f']);
-    }
-    if (param.filter) {
-      Object.entries(param.filter).forEach(([k, v]) => {
-        q.push([`f_${k}`, v]);
-      });
-    }
-    if (param.id) {
-      q.push(['id', param.id]);
-    }
-    if (param.top && param.top > 0) {
-      q.push(['top', param.top]);
-    }
-    return `?${q
-      .map(([k, v]) =>
-        v
-          ? `${encodeURIComponent(k)}=${encodeURIComponent(v)}`
-          : encodeURIComponent(k)
-      )
-      .join('&')}`;
-  };
-
-  const builder = supabase
-    .from(listView || table)
-    .select(Object.keys(field).join(','), {count: 'exact'});
-  searchParams.forEach((v, k) => {
-    if (k.startsWith('f_')) {
-      const fk = k.substring(2);
-      result.filter[fk] = v;
-      if (filter[fk]) {
-        filter[fk](builder, fk, v);
-      }
-    }
-  });
-  if (result.order && result.order.field) {
-    builder.order(result.order.field, {ascending: result.order.asc});
-  }
-  const rangeStart = (result.paging.page - 1) * result.paging.pageSize;
-  const rangeEnd = rangeStart + result.paging.pageSize - 1;
-  const {data, count, error} = await builder.range(rangeStart, rangeEnd);
-  if (error) throw error;
-  result.items = data;
-  result.total = count;
-  result.paging.rangeStart = rangeStart + 1;
-  result.paging.rangeEnd = Math.min(rangeEnd + 1, count);
-
-  if (result.id) {
-    const details = [];
-    details.push(
-      supabase
-        .from(detailView || table)
-        .select('*')
-        .eq(key || 'id', result.id)
-    );
-    const ddk = [];
-    if (detailData) {
-      Object.entries(detailData).forEach(([k, v], i) => {
-        ddk.push({k, v, i});
-        const q = supabase.from(v.table).select(v.columns.join(', '));
-        if (v.orderColumn) {
-          q.order(v.orderColumn, {ascending: v.ascending || false});
-        }
-        details.push(q);
-      });
-    }
-    const dres = await Promise.all(details);
-    for (const d of dres) {
-      if (d.error) throw d;
-    }
-    result.item = dres[0].data[0];
-    result.itemData = {};
-    for (const dk of ddk) {
-      const kkey = dk.v.columns[0];
-      const kvalue = dk.v.columns[1];
-      result.itemData[dk.k] = dres[dk.i + 1].data.map(v => ({
-        key: v[kkey],
-        value: v[kvalue]
-      }));
-    }
-  }
-  // await new Promise(resolve => setTimeout(resolve, 1000));
-  return result;
-}
+export type FilterOperand =
+  | 'null'
+  | '!null'
+  | 'contains'
+  | '!contains'
+  | '='
+  | '!='
+  | '<'
+  | '>'
+  | '>='
+  | '<=';
 
 export interface FetchList {
   table: string;
@@ -226,12 +40,59 @@ export interface FetchList {
     view: string;
     select: string;
     filter: {
-      [k: string]: (builder, key, value) => void;
+      [field: string]: FilterOperand[];
     };
   };
 }
 
-export function initListResult(searchParams: URLSearchParams): FetchListResult {
+export interface FetchListResult {
+  paging: {
+    page: number;
+    lastPage: number;
+    pageSize: number;
+    pagingSize: number;
+    rangeStart: number;
+    rangeEnd: number;
+    pages: number[];
+  };
+  order: {
+    field: string;
+    asc: boolean;
+  };
+  filter: {
+    field: string;
+    operand: FilterOperand;
+    value: any;
+  }[];
+  filterIndex: number | boolean;
+  total: number;
+  timestamp: string;
+  itemsKey: string;
+  items: any[];
+  id: string;
+  item: any;
+  options: {
+    [k: string]: {key; value}[];
+  };
+  createLink: (param: any) => string;
+  open: () => void;
+  gotoPage: (page: number) => () => void;
+  toggleOrder: (field: string) => () => void;
+  detailClose: () => void;
+  detailSave: (item: any) => () => void;
+  detailReload: () => void;
+  newFilter: () => void;
+  filterAdd: (filter: any) => () => void;
+  filterSave: (filter: any) => () => void;
+  filterEdit: (index: number) => () => void;
+  filterRemove: (index: number) => () => void;
+  filterClose: () => void;
+}
+
+export function initListResult(
+  {list}: FetchList,
+  searchParams: URLSearchParams
+): FetchListResult {
   const result: FetchListResult = {
     paging: {
       page: parseInt(searchParams.get('p') || '1'),
@@ -246,12 +107,13 @@ export function initListResult(searchParams: URLSearchParams): FetchListResult {
       field: searchParams.get('of') || 'id',
       asc: !searchParams.has('de')
     },
-    filterVisible: searchParams.has('f'),
-    filter: {},
+    filterIndex: false,
+    filter: [],
     total: null,
     timestamp: searchParams.get('ts'),
     itemsKey: null,
     items: [],
+    options: {},
     id: searchParams.get('id'),
     item: null,
     createLink: null,
@@ -261,11 +123,36 @@ export function initListResult(searchParams: URLSearchParams): FetchListResult {
     detailSave: null,
     detailClose: null,
     detailReload: null,
-    showFilter: null,
-    filterApply: null,
-    filterReset: null,
+    newFilter: null,
+    filterEdit: null,
+    filterAdd: null,
+    filterSave: null,
+    filterRemove: null,
     filterClose: null
   };
+  if (searchParams.has('f')) {
+    const f = searchParams.get('f');
+    if (f === '') {
+      result.filterIndex = true;
+    } else if (f === 'false') {
+      result.filterIndex = false;
+    } else {
+      result.filterIndex = parseInt(f);
+    }
+  } else {
+    result.filterIndex = false;
+  }
+  if (searchParams.has('fv')) {
+    JSON.parse(searchParams.get('fv')).forEach(v => {
+      if (list.filter[v.f] && list.filter[v.f].indexOf(v.o) >= 0) {
+        result.filter.push({
+          field: v.f,
+          operand: v.o,
+          value: v.v
+        });
+      }
+    });
+  }
   result.createLink = (p: any) => {
     const param = {...result, ...p};
     const q = [];
@@ -291,13 +178,18 @@ export function initListResult(searchParams: URLSearchParams): FetchListResult {
         }
       }
     }
-    if (param.filterVisible) {
+    if (param.filterIndex === true) {
       q.push(['f']);
+    } else if (param.filterIndex !== null && param.filterIndex !== false) {
+      q.push(['f', String(param.filterIndex)]);
     }
     if (param.filter) {
-      Object.entries(param.filter).forEach(([k, v]) => {
-        q.push([`f_${k}`, v]);
-      });
+      q.push([
+        'fv',
+        JSON.stringify(
+          param.filter.map(v => ({f: v.field, o: v.operand, v: v.value}))
+        )
+      ]);
     }
     if (param.id) {
       q.push(['id', param.id]);
@@ -315,52 +207,12 @@ export function initListResult(searchParams: URLSearchParams): FetchListResult {
   };
   return result;
 }
-export interface FetchListResult {
-  paging: {
-    page: number;
-    lastPage: number;
-    pageSize: number;
-    pagingSize: number;
-    rangeStart: number;
-    rangeEnd: number;
-    pages: number[];
-  };
-  order: {
-    field: string;
-    asc: boolean;
-  };
-  filter: {
-    [k: string]: string;
-  };
-  filterVisible: boolean;
-  total: number;
-  timestamp: string;
-  itemsKey: string;
-  items: any[];
-  id: string;
-  item: any;
-  options?: {
-    [k: string]: {key; value}[];
-  };
-  createLink: (param: any) => string;
-  open: () => void;
-  gotoPage: (page: number) => () => void;
-  toggleOrder: (field: string) => () => void;
-  detailClose: () => void;
-  detailSave: (item: any) => () => void;
-  detailReload: () => void;
-  showFilter: () => void;
-  filterApply: (filter: any) => () => void;
-  filterReset: () => void;
-  filterClose: () => void;
-}
-
 export async function fetchList(
   {table, cache, detail, list}: FetchList,
   searchParams: URLSearchParams,
   previous: FetchListResult
 ) {
-  const result = initListResult(searchParams);
+  const result = initListResult({table, cache, detail, list}, searchParams);
   result.itemsKey = result.createLink({id: null, filterVisible: null});
   const procs = [];
   procs.push(
@@ -369,13 +221,15 @@ export async function fetchList(
         const builder = supabase
           .from(list?.view || table)
           .select(list?.select || '*', {count: 'exact'});
-        searchParams.forEach((v, k) => {
-          if (k.startsWith('f_')) {
-            const fk = k.substring(2);
-            result.filter[fk] = v;
-            if (list?.filter[fk]) {
-              list.filter[fk](builder, fk, v);
-            }
+        result.filter.forEach(f => {
+          if (f.operand === 'contains') {
+            builder.ilike(f.field, `%${f.value}%`);
+          } else if (f.operand === '!contains') {
+            builder.not(f.field, 'ilike', `%${f.value}%`);
+          } else if (f.operand === '=') {
+            builder.eq(f.field, f.value);
+          } else {
+            console.log({unsupportedFilter: {f}});
           }
         });
         if (result.order && result.order.field) {
@@ -461,8 +315,4 @@ export async function fetchList(
   }
   await Promise.all(procs);
   return result;
-}
-
-export async function filter_ilike(builder, key, value) {
-  builder.ilike(key, `%${value}%`);
 }

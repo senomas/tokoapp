@@ -1,4 +1,6 @@
 <script lang="ts">
+  import {createEventDispatcher} from 'svelte';
+
   export let id;
   export let tagId = id;
   export let label = null;
@@ -8,14 +10,17 @@
   export let validate = {};
   export let options: {key: string; value: string}[] = null;
 
+  const dispatch = createEventDispatcher();
+
   let focus = false;
   let listOpen = false;
-  let initValue = true;
+  let svalue = null;
   let selectValue;
   let selectValueLC;
 
-  function select(opt, _) {
+  function select(opt, e) {
     value[id] = opt?.key;
+    dispatch('change', e);
   }
 
   function onFocus() {
@@ -34,14 +39,20 @@
     }
   }
 
+  function onChange(e) {
+    return () => {
+      dispatch('change', e);
+    };
+  }
+
   $: {
     if (options && type === 'select') {
-      if (initValue) {
+      if (svalue !== value[id]) {
         selectValue =
           type === 'select' && options
             ? options.filter(({key}) => key === value[id])[0]?.value
             : '';
-        initValue = false;
+        svalue = value[id];
       }
     }
   }
@@ -61,6 +72,7 @@
       bind:value={value[id]}
       on:focus={onFocus}
       on:blur={onBlur}
+      on:change={onChange}
       placeholder={label}
     />
   {:else if type === 'password'}
@@ -72,6 +84,7 @@
       bind:value={value[id]}
       on:focus={onFocus}
       on:blur={onBlur}
+      on:change={onChange}
       placeholder={label}
     />
   {:else if type === 'select'}
@@ -83,6 +96,7 @@
       bind:value={selectValue}
       on:focus={onFocus}
       on:blur={onBlur}
+      on:change={onChange}
       placeholder={label}
     />
   {:else}
