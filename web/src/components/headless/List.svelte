@@ -110,17 +110,33 @@
           filter.field = null;
           filter.operand = null;
           filter.value = null;
-          goto(res.createLink({filterIndex: false, filter: res.filter}));
+          goto(
+            res.createLink({
+              paging: {page: null},
+              filterIndex: false,
+              filter: res.filter
+            })
+          );
         };
       };
       res.filterSave = filter => {
         return () => {
-          console.log({save: {filter}});
+          res.filter[filter.index] = {
+            field: filter.field,
+            operand: filter.operand,
+            value: filter.value
+          };
           filter.index = null;
           filter.field = null;
           filter.operand = null;
           filter.value = null;
-          goto(res.createLink({filterIndex: false, filter: res.filter}));
+          goto(
+            res.createLink({
+              paging: {page: null},
+              filterIndex: false,
+              filter: res.filter
+            })
+          );
         };
       };
       res.filterEdit = index => {

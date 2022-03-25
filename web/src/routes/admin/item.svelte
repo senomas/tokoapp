@@ -97,7 +97,7 @@
           </td>
         </tr>
       {/if}
-      <tr>
+      <tr class="paging">
         <td colspan="4">
           <div class="flex justify-between px-1">
             <div>

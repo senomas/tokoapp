@@ -10,7 +10,7 @@
       <div class="item">filter 1</div>
     {:else}
       <div on:click={value.filterEdit(idx)} class="item">
-        <span class="text-xs font-semibold mr-2">
+        <span class="label text-xs font-semibold mr-2">
           {filter.field}
           {filter.operand}
           {filter.value}

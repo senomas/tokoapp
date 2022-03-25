@@ -1,8 +1,9 @@
 <script lang="ts">
-  import {filter_ilike, type FetchList} from '../../supabase';
   import List from '../../components/headless/List.svelte';
   import OrderByIcon from '../../components/icons/OrderByIcon.svelte';
   import Input from '../../components/lib/Input.svelte';
+  import ListFilterForm from '../../components/lib/ListFilterForm.svelte';
+  import type {FetchList} from '../../supabase';
 
   let config: FetchList = {
     table: 'user_views',
@@ -24,9 +25,8 @@
       view: 'user_views',
       select: '*',
       filter: {
-        id: filter_ilike,
-        email: filter_ilike,
-        roles: filter_ilike
+        email: ['contains', '!contains', '=', '!='],
+        roles: ['contains', '!contains']
       }
     }
   };
@@ -97,11 +97,8 @@
               {/if}
             </div>
             <div class="flex space-x-4">
-              <div
-                class={Object.keys(filter).length > 0 ? 'link' : 'link-'}
-                on:click={value.showFilter}
-              >
-                FILTER
+              <div id="filter" class="link" on:click={value.newFilter}>
+                ADD FILTER
               </div>
               <div
                 class={value.paging.page > 1 ? 'link' : 'link-'}
@@ -145,41 +142,7 @@
       </tr>
     </tfoot>
   </table>
-  {#if value.filterVisible}
-    <div class="veil grid sm:content-center border-0">
-      <div class="text-white border-0 w-full flex justify-center">
-        <div class="border-0 w-full sm:w-[600px] form">
-          <div class="header">Filter</div>
-          <div class="body">
-            <Input type="text" id="name" bind:value={filter} class="w-full" />
-            <Input
-              type="text"
-              id="category"
-              bind:value={filter}
-              class="w-full"
-            />
-            <Input
-              type="text"
-              id="description"
-              bind:value={filter}
-              class="w-full"
-            />
-          </div>
-          <div class="footer">
-            <button class="btn-primary" on:click={value.filterApply(filter)}
-              >Apply</button
-            >
-            <button class="btn-cancel" on:click={value.filterClose}
-              >Close</button
-            >
-            <button class="btn-cancel" on:click={value.filterReset}
-              >Reset</button
-            >
-          </div>
-        </div>
-      </div>
-    </div>
-  {/if}
+  <ListFilterForm {config} {value} />
   {#if value.item}
     <div class="veil grid sm:content-center border-0">
       <div class="text-white border-0 w-full flex justify-center">

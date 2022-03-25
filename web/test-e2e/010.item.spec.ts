@@ -93,15 +93,85 @@ test('010.item.list.filterByCategory', async () => {
   await page.waitForLoadState('networkidle');
   await screenshot('filter.png');
 
-  await expect(page.locator('.veil .header')).toHaveText('Filter');
-  await page.fill('.veil .body >> text=Category', 'tas');
-  await screenshot('filter-fill.png');
-  await page.locator('.veil .footer button >> text=Apply').click();
-  await page.waitForLoadState('networkidle');
-  await screenshot('filter-apply.png');
+  await expect(page.locator('.veil .header')).toHaveText('Add Filter');
 
-  await expect(items.locator('tfoot')).toContainText('1 - 10 of 170');
+  const editField = page.locator('.veil .body input#field');
+  const editFieldOptions = page.locator(
+    '.veil .body div#field.options .option'
+  );
+  const editOperand = page.locator('.veil .body input#operand');
+  const editOperandOptions = page.locator(
+    '.veil .body div#operand.options .option'
+  );
+  const editValue = page.locator('.veil .body input#value');
+
+  await editField.click();
+  await expect(editFieldOptions).toHaveCount(4);
+  await expect(editFieldOptions.nth(1)).toHaveText('category');
+  editFieldOptions.nth(1).click();
+  await page.waitForTimeout(500);
+
+  await editOperand.click();
+  await expect(editOperandOptions).toHaveCount(5);
+  await expect(editOperandOptions.nth(1)).toHaveText('contains');
+  editOperandOptions.nth(1).click();
+  await page.waitForTimeout(500);
+
+  await editValue.fill('tas');
+  await screenshot('filter-fill.png');
+  await page.locator('.veil .footer button >> text=add').click();
+  await page.waitForLoadState('networkidle');
+  await screenshot('filter-added.png');
+
+  await expect(items.locator('tfoot .filter .item')).toHaveCount(1);
+  await expect(items.locator('tfoot .filter .label').nth(0)).toContainText(
+    'category contains tas'
+  );
+
+  await expect(items.locator('tfoot tr.paging')).toContainText('1 - 10 of 170');
+  await expect(paging).toHaveCount(10);
   for (let i = 0; i < 10; i++) {
+    await expect(paging.nth(i), `paging ${i + 1}`).toHaveText(String(i + 1));
+    await expect(paging.nth(i), `paging ${i + 1}`).toHaveClass(
+      `page ${i === 0 ? 'link-' : 'link'}`
+    );
+  }
+});
+
+test('010.item.list.editFilterByCategory', async () => {
+  const items = page.locator('table#items');
+  const paging = items.locator('tfoot div.page');
+
+  await expect(items.locator('tfoot .filter .item')).toHaveCount(1);
+  await expect(items.locator('tfoot .filter .label').nth(0)).toContainText(
+    'category contains tas'
+  );
+
+  items.locator('tfoot .filter .label').nth(0).click();
+  await page.waitForLoadState('networkidle');
+  await screenshot('filter.png');
+
+  await expect(page.locator('.veil .header')).toHaveText('Add Filter');
+
+  const editField = page.locator('.veil .body input#field');
+  const editValue = page.locator('.veil .body input#value');
+
+  expect(editField).toHaveValue('category');
+
+  await editValue.fill('botol');
+  await screenshot('filter-fill.png');
+  await page.locator('.veil .footer button >> text=save').click();
+  await page.waitForLoadState('networkidle');
+  await screenshot('filter-saved.png');
+
+  await expect(items.locator('tfoot .filter .item')).toHaveCount(1);
+  await expect(items.locator('tfoot .filter .label').nth(0)).toContainText(
+    'category contains botol'
+  );
+
+  await expect(items.locator('tfoot tr.paging')).toContainText('1 - 10 of 57');
+  await expect(paging).toHaveCount(6);
+  for (let i = 0; i < 6; i++) {
     await expect(paging.nth(i), `paging ${i + 1}`).toHaveText(String(i + 1));
     await expect(paging.nth(i), `paging ${i + 1}`).toHaveClass(
       `page ${i === 0 ? 'link-' : 'link'}`
@@ -112,34 +182,44 @@ test('010.item.list.filterByCategory', async () => {
 test('010.item.list.filterNoData', async () => {
   const items = page.locator('table#items');
 
-  await items.locator('tfoot div#filter').click();
+  items.locator('tfoot .filter .label').nth(0).click();
   await page.waitForLoadState('networkidle');
   await screenshot('filter.png');
 
-  await expect(page.locator('.veil .header')).toHaveText('Filter');
-  await page.fill('.veil .body >> text=Category', 'NO_DATA');
-  await screenshot('filter-fill.png');
-  await page.locator('.veil .footer button >> text=Apply').click();
-  await page.waitForLoadState('networkidle');
-  await screenshot('filter-no-data.png');
+  await expect(page.locator('.veil .header')).toHaveText('Add Filter');
 
-  await expect(items.locator('tfoot')).toContainText('No data');
+  const editField = page.locator('.veil .body input#field');
+  const editValue = page.locator('.veil .body input#value');
+
+  expect(editField).toHaveValue('category');
+
+  await editValue.fill('NO_DATA');
+  await screenshot('filter-fill.png');
+  await page.locator('.veil .footer button >> text=save').click();
+  await page.waitForLoadState('networkidle');
+  await screenshot('filter-saved.png');
+
+  await expect(items.locator('tfoot .filter .item')).toHaveCount(1);
+  await expect(items.locator('tfoot .filter .label').nth(0)).toContainText(
+    'category contains NO_DATA'
+  );
+
+  await expect(items.locator('tfoot tr.paging')).toContainText('No data');
 });
 
-test('010.item.list.resetFilter', async () => {
+test('010.item.list.removeFilter', async () => {
   const items = page.locator('table#items');
   const paging = items.locator('tfoot div.page');
 
-  await items.locator('tfoot div#filter').click();
-  await page.waitForLoadState('networkidle');
-  await screenshot('filter.png');
+  await expect(items.locator('tfoot .filter .item')).toHaveCount(1);
+  await expect(items.locator('tfoot .filter .label').nth(0)).toContainText(
+    'category contains NO_DATA'
+  );
 
-  await expect(page.locator('.veil .header')).toHaveText('Filter');
-  await page.locator('.veil .footer button >> text=Reset').click();
-  await page.waitForLoadState('networkidle');
-  await screenshot('filter-reset.png');
+  await items.locator('tfoot .filter .remove').nth(0).click();
 
   await expect(items.locator('tfoot')).toContainText('1 - 10 of 227');
+  await expect(paging).toHaveCount(10);
   for (let i = 0; i < 10; i++) {
     await expect(paging.nth(i), `paging ${i + 1}`).toHaveText(String(i + 1));
     await expect(paging.nth(i), `paging ${i + 1}`).toHaveClass(
