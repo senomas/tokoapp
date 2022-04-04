@@ -3,13 +3,14 @@
   import {onDestroy, onMount} from 'svelte';
   import '../app.css';
   import LoginForm from '../components/lib/LoginForm.svelte';
-  import {supabase} from '../supabase';
+  import {initSupabase, supabase} from '../supabase';
   import Sidebar from '../components/lib/Sidebar.svelte';
 
   let user: any = undefined;
 
   let unUser;
   onMount(() => {
+    initSupabase(window.location.origin);
     unUser = User.subscribe(v => {
       user = v;
       sessionStorage.setItem('user', JSON.stringify(v));

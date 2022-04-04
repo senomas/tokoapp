@@ -1,9 +1,22 @@
-import {createClient} from '@supabase/supabase-js';
+import {createClient, SupabaseClient} from '@supabase/supabase-js';
 
-export const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL as string,
-  import.meta.env.VITE_SUPABASE_ANON_KEY as string
-);
+export let supabase: SupabaseClient = null;
+let supabaseUrl = null;
+
+export function initSupabase(url = null) {
+  if (url === null || import.meta.env.MODE === 'development')
+    url = import.meta.env.VITE_SUPABASE_URL as string;
+  if (supabaseUrl === null) {
+    supabaseUrl = url;
+    supabase = createClient(
+      url,
+      import.meta.env.VITE_SUPABASE_ANON_KEY as string
+    );
+  } else if (supabaseUrl !== url) {
+    throw {message: `Invalid url ${url} != ${supabaseUrl}`};
+  }
+  return supabase;
+}
 
 export type FilterOperand =
   | 'null'
